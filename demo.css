@@ -1,0 +1,62 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+margin: 0;padding: 0;border: 0;font-size: 100%;font: inherit;vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {display: block;}
+body {line-height: 1;}
+ol, ul {list-style: none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after,
+q:before, q:after {content: '';content: none;}
+table {border-collapse: collapse;border-spacing: 0;}
+
+html {background-color: #fff;}
+.container {padding: 15px; width: 768px;}
+
+.container {width: 600px;}
+img {max-width: 600px; height: auto;}
+
+hr {border: none; height: 0; border-top: 1px solid #ccc; margin-bottom: 1em;}
+
+@media (max-width: 599px) {
+    .container {width: 300px;}
+    img {max-width: 300px; height: auto;}
+}
+
+h1 {font-family: georgia, serif; font-size: 14px; font-variant: small-caps; padding: 5px; margin-bottom: 10px; background-color: #ffa; display: inline-block;}
+
+/* ---- */
+
+/* TODO: move to javascript */
+ul.sideburn {list-style-type: none; margin: 0; padding: 0;}
+ul.sideburn li {margin: 0; padding: 0;}
+ul.sideburn img {display: block;}
+
+.sideburn-wrap {margin: 20px 0;}
+.sideburn-nav {font-size: 12px; cursor: pointer;}
+.sideburn-nav-above {padding-bottom: 10px}
+.sideburn-nav-below {padding-top: 10px}
+.sideburn-nav .previous,
+.sideburn-nav .next {text-decoration: underline;}
+.sideburn-nav .jump {color: #999;}
+.sideburn-nav .selected {color: #000; font-weight: bold;}
+.sideburn-loader {background-color: #eee; display: none; text-align: center; color: #000;}
+.sideburn-loading .sideburn-loader {display: block;}
+
+.sideburn-nav ul.thumbnails {list-style-type: none; margin: 0; padding: 0; overflow: hidden;}
+.sideburn-nav ul.thumbnails li {margin: 0; padding: 0; float: left; margin-right: 10px; opacity: 0.3;}
+.sideburn-nav ul.thumbnails img {display: block; width: auto; height: 40px;}
+.sideburn-nav ul.thumbnails li.selected {opacity: 1;}

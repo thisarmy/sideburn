@@ -377,7 +377,6 @@ var Sideburn = function($ul) {
             }
         }
     } else {
-        // TODO: see if there's an li tag with class="start"
         var filtered = this.items.filter('.start');
         if (filtered.length) {
             this.currentIndex = this.items.index(filtered);

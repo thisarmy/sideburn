@@ -123,7 +123,7 @@ var plugins = {};
 
 var Fade = function(sideburn) {
     this.sideburn = sideburn;
-}
+};
 Fade.prototype.animate = function($oldItem, $newItem, callback) {
     console.log("Fade.animate", $oldItem, $newItem);
     $oldItem.css({
@@ -155,12 +155,12 @@ Fade.prototype.animate = function($oldItem, $newItem, callback) {
         });
         callback();
     });
-}
+};
 plugins['fade'] = Fade;
 
 var SlideLeft = function(sideburn) {
     this.sideburn = sideburn;
-}
+};
 SlideLeft.prototype.animate = function($oldItem, $newItem, callback) {
     $oldItem.css({
         'left': this.sideburn.calculateLeft($oldItem),
@@ -183,12 +183,12 @@ SlideLeft.prototype.animate = function($oldItem, $newItem, callback) {
         $oldItem.hide();
         callback();
     });
-}
+};
 plugins['slide-left'] = SlideLeft;
 
 var SlideRight = function(sideburn) {
     this.sideburn = sideburn;
-}
+};
 SlideRight.prototype.animate = function($oldItem, $newItem, callback) {
     $oldItem.css({
         'left': this.sideburn.calculateLeft($oldItem),
@@ -211,9 +211,8 @@ SlideRight.prototype.animate = function($oldItem, $newItem, callback) {
         $oldItem.hide();
         callback();
     });
-}
+};
 plugins['slide-right'] = SlideRight;
-
 
 /*
 plugins['reveal-left']
@@ -511,14 +510,14 @@ var Sideburn = function($ul) {
     }
 
     this.show(this.currentIndex);
-}
+};
 Sideburn.prototype.getId = function(index) {
     return this.items.eq(index).attr('id');
-}
+};
 Sideburn.prototype.getUrls = function(index) {
     // pull the urls for the item at index out of the cache
     return this.urlCache[this.getId(index)] || [];
-}
+};
 Sideburn.prototype.getUncachedUrls = function(urls) {
     var uncached = [];
     for (var i in urls) {
@@ -529,7 +528,7 @@ Sideburn.prototype.getUncachedUrls = function(urls) {
         }
     }
     return uncached;
-}
+};
 Sideburn.prototype.getAllUncachedUrls = function() {
     var uncached = [];
     for (var i=0; i<numItems; i++) {
@@ -538,7 +537,7 @@ Sideburn.prototype.getAllUncachedUrls = function() {
         uncached = uncached.concat(more);
     }
     return uncached;
-}
+};
 Sideburn.prototype.calculateTop = function($li) {
 /*
     Calculate the item's "home" position.
@@ -549,7 +548,7 @@ Sideburn.prototype.calculateTop = function($li) {
     } else {
         return 0;
     }
-}
+};
 Sideburn.prototype.calculateLeft = function($li) {
 /*
     Calculate the item's "home" position.
@@ -560,7 +559,7 @@ Sideburn.prototype.calculateLeft = function($li) {
     } else {
         return 0;
     }
-}
+};
 Sideburn.prototype.calculateWidth = function($li) {
 /*
     Calculate the ul element's width.
@@ -573,7 +572,7 @@ Sideburn.prototype.calculateWidth = function($li) {
     } else {
         return $li.width();
     }
-}
+};
 Sideburn.prototype.calculateHeight = function($li) {
 /*
     Calculate the ul element's height.
@@ -587,7 +586,7 @@ Sideburn.prototype.calculateHeight = function($li) {
     } else {
         return $li.height();
     }
-}
+};
 Sideburn.prototype._showLoader = function() {
 /*
     Automatically called when preloading.
@@ -600,14 +599,14 @@ Sideburn.prototype._showLoader = function() {
         .width(w)
         .height(h)
         .css('line-height', h+'px');
-}
+};
 Sideburn.prototype._hideLoader = function() {
 /*
     Automatically called when animating.
     For internal use only.
 */
     this.wrap.removeClass('sideburn-loading');
-}
+};
 Sideburn.prototype._animate = function(oldIndex, newIndex, callback) {
 /*
     Automatically called after preloading or immediately when showing
@@ -637,7 +636,7 @@ Sideburn.prototype._animate = function(oldIndex, newIndex, callback) {
 
     // then call the callback
     this.plugin.animate($oldItem, $newItem, callback);
-}
+};
 Sideburn.prototype._initialAnimate = function(index, callback) {
 /*
     Automatically called when showing for the first time after preloading
@@ -670,7 +669,7 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
     }, speed);
 
     $first.fadeIn(speed, callback);
-}
+};
 Sideburn.prototype._preload = function(urls, callback) {
 /*
     Automatically called when showing some image(s) that aren't loaded yet.
@@ -698,7 +697,7 @@ Sideburn.prototype._preload = function(urls, callback) {
         }
     }
     check();
-}
+};
 Sideburn.prototype.updateNav = function() {
     if (!this.nav) {
         return;
@@ -722,7 +721,7 @@ Sideburn.prototype.updateNav = function() {
     if (this.plugin.updateNav) {
         this.plugin.updateNav();
     }
-}
+};
 Sideburn.prototype.show = function(index) {
 /*
     Switch to an item specified by index.
@@ -780,7 +779,7 @@ Sideburn.prototype.show = function(index) {
             reallyShow();
         }
     }
-}
+};
 Sideburn.prototype.next = function() {
 /*
     Switch to the next item.
@@ -790,7 +789,7 @@ Sideburn.prototype.next = function() {
         nextIndex = 0;
     }
     this.show(nextIndex);
-}
+};
 Sideburn.prototype.previous = function() {
 /*
     Switch to the previous item.
@@ -800,7 +799,7 @@ Sideburn.prototype.previous = function() {
         nextIndex = this.numItems-1;
     }
     this.show(nextIndex);
-}
+};
 
 $.fn.sideburn = function(method) {
     this.each(function() {
@@ -828,5 +827,5 @@ $.fn.sideburn = function(method) {
         }
     });
     return this;
-}
+};
 })(jQuery);

@@ -55,6 +55,7 @@ GOALS
 
     shuffle (default false)
     start (default index or random)
+    skipfirstrun (default false)
 
 * Events (callbacks?):
     - sideburn:initialized
@@ -84,14 +85,15 @@ horizontal
 
 slide left (new ones appear from the right, next to current)
 slide right (new ones appear from the left, next to current)
-reveal left (new ones appear from the right, below current)
-reveal right (new ones appear from the left, below current)
-
+TODO: reveal left (new ones appear from the right, below current)
+TODO: reveal right (new ones appear from the left, below current)
+TODO: slide left and right (images in a horizontal line)
+TODO: slide left and right wrap (images in a horizontal line, wrap around)
 
 vertical
 --------
 
-same as above, but up/down and not left/right
+TODO: same as above, but up/down and not left/right
 
 */
 
@@ -216,14 +218,18 @@ plugins['slide-right'] = SlideRight;
 /*
 plugins['reveal-left']
 plugins['reveal-right']
+plugins['slide-left-right']
+plugins['slide-left-right-wrap'] (default)
 plugins['slide-up']
 plugins['slide-down']
 plugins['reveal-up']
 plugins['reveal-down']
+plugins['slide-up-down']
+plugins['slide-up-down-wrap']
 */
 
 function detectPlugin(style) {
-    var plugin = plugins['fade'];
+    var plugin = plugins['fade']; // TODO: change default
     if (plugins[style]) {
         plugin = plugins[style];
     }
@@ -235,6 +241,7 @@ var Sideburn = function($ul) {
 
     this.currentIndex = 0;
     this.firstRun = true;
+    this.skipFirstRun = false;
     this.busyShowing = false;
     this.resized = false;
     this.pause = false;
@@ -369,7 +376,14 @@ var Sideburn = function($ul) {
                 this.currentIndex = start;
             }
         }
+    } else {
+        // TODO: see if there's an li tag with class="start"
+        var filtered = this.items.filter('.start');
+        if (filtered.length) {
+            this.currentIndex = this.items.index(filtered);
+        }
     }
+    this.skipFirstRun = (this.ul.data('skipfirstrun')) ? true : false;
 
     // add the navigation div if there should be nav (start out hidden)
     this.wrap.find('> .sideburn-nav').remove();
@@ -639,6 +653,11 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
         this.nav.element.show();
     }
 
+    var speed = this.speed;
+    if (this.skipFirstRun) {
+        speed = 0;
+    }
+
     $first
         .css('top', this.calculateTop($first))
         .css('left', this.calculateLeft($first))
@@ -649,9 +668,9 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
     this.ul.animate({
         'width': width,
         'height': height
-    }, this.speed);
+    }, speed);
 
-    $first.fadeIn(this.speed, callback);
+    $first.fadeIn(speed, callback);
 }
 Sideburn.prototype._preload = function(urls, callback) {
 /*

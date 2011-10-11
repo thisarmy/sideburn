@@ -816,6 +816,7 @@ $.fn.sideburn = function(method) {
             var $wrap = $ul.parents('.sideburn-wrap');
             if ($ul.data('sideburn') && $wrap.length) {
                 $ul.data('sideburn').pause = true;
+                $ul.data('sideburn').justPaused = true;
                 $ul.removeData('sideburn');
                 $wrap.find('ul,li').removeAttr('style');
                 $ul.find('> li > img:only-child').unbind('click');

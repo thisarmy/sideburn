@@ -812,7 +812,19 @@ $.fn.sideburn = function(method) {
             return;
         }
 
-        var sideburn = new Sideburn($ul);
+        if (method == "destroy") {
+            var $wrap = $ul.parents('.sideburn-wrap');
+            if ($ul.data('sideburn') && $wrap.length) {
+                $ul.data('sideburn').pause = true;
+                $ul.removeData('sideburn');
+                $wrap.find('ul,li').removeAttr('style');
+                $ul.find('> li > img:only-child').unbind('click');
+                $wrap.replaceWith($ul);
+            }
+        } else {
+            var sideburn = new Sideburn($ul);
+            $ul.data('sideburn', sideburn);
+        }
     });
     return this;
 }

@@ -57,7 +57,7 @@ GOALS
     start (default index or random)
     skipfirstrun (default false)
 
-* Events (callbacks?):
+* Events (callbacks?): (TODO)
     - sideburn:initialized
     - sideburn:resized
     - sideburn:switch($previous, $next)

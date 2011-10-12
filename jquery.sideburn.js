@@ -87,8 +87,8 @@ slide left (new ones appear from the right, next to current)
 slide right (new ones appear from the left, next to current)
 TODO: reveal left (new ones appear from the right, below current)
 TODO: reveal right (new ones appear from the left, below current)
-TODO: slide left and right (images in a horizontal line)
-TODO: slide left and right wrap (images in a horizontal line, wrap around)
+slide left and right (images in a horizontal line)
+slide left and right wrap (images in a horizontal line, wrap around)
 
 vertical
 --------
@@ -378,7 +378,6 @@ SlideLeftRightWrap.prototype.step = function() {
 plugins['slide-left-right-wrap'] = SlideLeftRightWrap;
 
 /*
-plugins['slide-left-right-wrap']
 plugins['reveal-left']
 plugins['reveal-right']
 plugins['slide-up']

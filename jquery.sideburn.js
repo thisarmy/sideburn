@@ -214,11 +214,110 @@ SlideRight.prototype.animate = function($oldItem, $newItem, callback) {
 };
 plugins['slide-right'] = SlideRight;
 
+function makeLinearIncrements(total, numSteps) {
+    var steps = [],
+        increment = total/numSteps;
+    for (var i=0; i<numSteps; i++) {
+        steps.push(increment);
+    }
+    return steps;
+};
+
+SlideLeftRight = function(sideburn) {
+    this.sideburn = sideburn;
+    this.current = null
+    this.destination = null;
+    this.direction = null;
+    this.numSteps = null;
+    this.speedIncrements = [];
+    this.callback = null;
+};
+SlideLeftRight.prototype.animate = function($oldItem, $newItem, callback) {
+    var oldIndex = this.sideburn.items.index($oldItem),
+        newIndex = this.sideburn.items.index($newItem),
+        numItems = this.sideburn.items.length,
+        lastIndex = numItems-1,
+        diff,
+        numSteps;
+
+    diff = newIndex-oldIndex;
+    numSteps = Math.abs(diff);
+    this.current = oldIndex;
+    this.destination = newIndex;
+    this.direction = (diff > 0) ? 1 : -1;
+    this.numSteps = numSteps;
+    this.speedIncrements = makeLinearIncrements(this.sideburn.speed, numSteps);
+
+    this.callback = callback;
+    this.step();
+};
+SlideLeftRight.prototype.step = function() {
+    var that = this,
+        $oldItem = this.sideburn.items.eq(this.current),
+        $newItem = this.sideburn.items.eq(this.current+this.direction),
+        speed = this.speedIncrements.shift(),
+        easing = (this.numSteps == 1) ? 'swing' : 'linear';
+
+    if (this.current == this.destination) {
+        this.callback();
+
+    } else if (this.direction == 1) {
+        // left
+        $oldItem.css({
+            'left': this.sideburn.calculateLeft($oldItem),
+            'top': this.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': this.sideburn.calculateLeft($newItem)+$oldItem.width(),
+            'top': this.sideburn.calculateTop($newItem)
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'left': this.sideburn.calculateLeft($newItem)-$oldItem.width()
+        }, speed, easing);
+
+        $newItem.animate({
+            'left': this.sideburn.calculateLeft($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            that.current += that.direction;
+            that.step();
+        });
+
+    } else {
+        // right
+        $oldItem.css({
+            'left': this.sideburn.calculateLeft($oldItem),
+            'top': this.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': this.sideburn.calculateLeft($newItem)-$newItem.width(),
+            'top': this.sideburn.calculateTop($newItem)
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'left': this.sideburn.calculateLeft($oldItem)+$newItem.width()
+        }, speed, easing);
+
+        $newItem.animate({
+            'left': this.sideburn.calculateLeft($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            that.current += that.direction;
+            that.step();
+        });
+    }
+};
+plugins['slide-left-right'] = SlideLeftRight;
+
 /*
+plugins['slide-left-right-wrap']
 plugins['reveal-left']
 plugins['reveal-right']
-plugins['slide-left-right']
-plugins['slide-left-right-wrap'] (default)
 plugins['slide-up']
 plugins['slide-down']
 plugins['reveal-up']
@@ -246,10 +345,10 @@ var Sideburn = function($ul) {
     this.pause = false;
     this.justPaused = false;
 
-    // the ul must have overflow: none and position: relative
+    // the ul must have overflow: hidden and position: relative
     this.ul = $ul;
     this.ul
-        .css('overflow', 'none')
+        .css('overflow', 'hidden')
         .css('position', 'relative');
 
     // add a wrapper if one doesn't exist yet

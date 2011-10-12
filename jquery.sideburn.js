@@ -389,7 +389,7 @@ plugins['slide-up-down-wrap']
 */
 
 function detectPlugin(style) {
-    var plugin = plugins['fade']; // TODO: change default
+    var plugin = plugins['slide-left-right-wrap'];
     if (plugins[style]) {
         plugin = plugins[style];
     }

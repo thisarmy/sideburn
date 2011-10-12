@@ -125,7 +125,6 @@ var Fade = function(sideburn) {
     this.sideburn = sideburn;
 };
 Fade.prototype.animate = function($oldItem, $newItem, callback) {
-    console.log("Fade.animate", $oldItem, $newItem);
     $oldItem.css({
         'left': this.sideburn.calculateLeft($oldItem),
         'top': this.sideburn.calculateTop($oldItem),
@@ -223,6 +222,79 @@ function makeLinearIncrements(total, numSteps) {
     return steps;
 };
 
+var slideStep = function(plugin) {
+    if (plugin.current == plugin.destination) {
+        return plugin.callback();
+    }
+
+    var next = plugin.current+plugin.direction,
+        numItems = plugin.sideburn.items.length;
+
+    while (next < 0) {
+        next += numItems;
+    }
+    while (next >= numItems) {
+        next -= numItems;
+    }
+
+    var $oldItem = plugin.sideburn.items.eq(plugin.current),
+        $newItem = plugin.sideburn.items.eq(next),
+        speed = plugin.speedIncrements.shift(),
+        easing = (plugin.numSteps == 1) ? 'swing' : 'linear';
+
+
+    if (plugin.direction == 1) {
+        // left
+        $oldItem.css({
+            'left': plugin.sideburn.calculateLeft($oldItem),
+            'top': plugin.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': plugin.sideburn.calculateLeft($newItem)+$oldItem.width(),
+            'top': plugin.sideburn.calculateTop($newItem)
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'left': plugin.sideburn.calculateLeft($newItem)-$oldItem.width()
+        }, speed, easing);
+
+        $newItem.animate({
+            'left': plugin.sideburn.calculateLeft($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            plugin.current = next;
+            plugin.step();
+        });
+
+    } else {
+        // right
+        $oldItem.css({
+            'left': plugin.sideburn.calculateLeft($oldItem),
+            'top': plugin.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': plugin.sideburn.calculateLeft($newItem)-$newItem.width(),
+            'top': plugin.sideburn.calculateTop($newItem)
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'left': plugin.sideburn.calculateLeft($oldItem)+$newItem.width()
+        }, speed, easing);
+
+        $newItem.animate({
+            'left': plugin.sideburn.calculateLeft($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            plugin.current = next;
+            plugin.step();
+        });
+    }
+};
+
 SlideLeftRight = function(sideburn) {
     this.sideburn = sideburn;
     this.current = null
@@ -252,67 +324,58 @@ SlideLeftRight.prototype.animate = function($oldItem, $newItem, callback) {
     this.step();
 };
 SlideLeftRight.prototype.step = function() {
-    var that = this,
-        $oldItem = this.sideburn.items.eq(this.current),
-        $newItem = this.sideburn.items.eq(this.current+this.direction),
-        speed = this.speedIncrements.shift(),
-        easing = (this.numSteps == 1) ? 'swing' : 'linear';
-
-    if (this.current == this.destination) {
-        this.callback();
-
-    } else if (this.direction == 1) {
-        // left
-        $oldItem.css({
-            'left': this.sideburn.calculateLeft($oldItem),
-            'top': this.sideburn.calculateTop($oldItem)
-        });
-        $newItem.css({
-            'left': this.sideburn.calculateLeft($newItem)+$oldItem.width(),
-            'top': this.sideburn.calculateTop($newItem)
-        });
-        $newItem.show();
-
-        $oldItem.animate({
-            'left': this.sideburn.calculateLeft($newItem)-$oldItem.width()
-        }, speed, easing);
-
-        $newItem.animate({
-            'left': this.sideburn.calculateLeft($newItem)
-        }, speed, easing, function() {
-            // cleanup
-            $oldItem.hide();
-            that.current += that.direction;
-            that.step();
-        });
-
-    } else {
-        // right
-        $oldItem.css({
-            'left': this.sideburn.calculateLeft($oldItem),
-            'top': this.sideburn.calculateTop($oldItem)
-        });
-        $newItem.css({
-            'left': this.sideburn.calculateLeft($newItem)-$newItem.width(),
-            'top': this.sideburn.calculateTop($newItem)
-        });
-        $newItem.show();
-
-        $oldItem.animate({
-            'left': this.sideburn.calculateLeft($oldItem)+$newItem.width()
-        }, speed, easing);
-
-        $newItem.animate({
-            'left': this.sideburn.calculateLeft($newItem)
-        }, speed, easing, function() {
-            // cleanup
-            $oldItem.hide();
-            that.current += that.direction;
-            that.step();
-        });
-    }
+    slideStep(this);
 };
 plugins['slide-left-right'] = SlideLeftRight;
+
+SlideLeftRightWrap = function(sideburn) {
+    this.sideburn = sideburn;
+    this.current = null
+    this.destination = null;
+    this.direction = null;
+    this.numSteps = null;
+    this.speedIncrements = [];
+    this.callback = null;
+};
+SlideLeftRightWrap.prototype.animate = function($oldItem, $newItem, callback) {
+    var oldIndex = this.sideburn.items.index($oldItem),
+        newIndex = this.sideburn.items.index($newItem),
+        numItems = this.sideburn.items.length,
+        lastIndex = numItems-1,
+        numSteps;
+
+    if (newIndex>oldIndex) {
+        if (oldIndex == 0 && newIndex == lastIndex) {
+            // at the start going to the end
+            this.direction = -1;
+            numSteps = 1;
+        } else {
+            // just going right as normal
+            this.direction = 1;
+            numSteps = Math.abs(newIndex-oldIndex);
+        }
+    } else {
+        if (oldIndex == lastIndex && newIndex == 0) {
+            // at the end going to the front
+            this.direction = 1;
+            numSteps = 1;
+        } else {
+            // just going left as normal
+            this.direction = -1
+            numSteps = Math.abs(newIndex-oldIndex);
+        }
+    }
+    this.current = oldIndex;
+    this.destination = newIndex;
+    this.numSteps = numSteps;
+    this.speedIncrements = makeLinearIncrements(this.sideburn.speed, numSteps);
+    this.callback = callback;
+    this.step();
+};
+SlideLeftRightWrap.prototype.step = function() {
+    slideStep(this);
+};
+plugins['slide-left-right-wrap'] = SlideLeftRightWrap;
 
 /*
 plugins['slide-left-right-wrap']
@@ -401,9 +464,7 @@ var Sideburn = function($ul) {
         }
         obj.complete = img.complete;
         if (!obj.complete) {
-            //console.log("installing loader for", img);
             $img.load(function() {
-                //console.log(img, "loaded");
                 obj.complete = true;
             });
         }
@@ -788,7 +849,6 @@ Sideburn.prototype._preload = function(urls, callback) {
             }
         }
         if (waiting.length) {
-            //console.log("still waiting for", waiting.length);
             urls = waiting;
             setTimeout(check, 1000);
         } else {

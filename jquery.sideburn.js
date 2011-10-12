@@ -222,7 +222,7 @@ function makeLinearIncrements(total, numSteps) {
     return steps;
 };
 
-var slideStep = function(plugin) {
+var horizontalSlideStep = function(plugin) {
     if (plugin.current == plugin.destination) {
         return plugin.callback();
     }
@@ -324,7 +324,7 @@ SlideLeftRight.prototype.animate = function($oldItem, $newItem, callback) {
     this.step();
 };
 SlideLeftRight.prototype.step = function() {
-    slideStep(this);
+    horizontalSlideStep(this);
 };
 plugins['slide-left-right'] = SlideLeftRight;
 
@@ -373,7 +373,7 @@ SlideLeftRightWrap.prototype.animate = function($oldItem, $newItem, callback) {
     this.step();
 };
 SlideLeftRightWrap.prototype.step = function() {
-    slideStep(this);
+    horizontalSlideStep(this);
 };
 plugins['slide-left-right-wrap'] = SlideLeftRightWrap;
 

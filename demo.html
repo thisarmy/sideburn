@@ -17,7 +17,47 @@ $(document).ready(function() {
 
 <h1>Sideburn</h1>
 
-<ul class="sideburn" data-speed="500" data-style="slide-left-right" data-nav='{"style": "jump", "numbering": "01", "jumpseparator": "|", "total": true, "brackets": true, "next": "Next", "position": "below"}'>
+<div class="sideburnsettings">
+<!--
+speed in milliseconds.
+    0 means instant.
+    1000 or 500 is probably sane.
+    500 is the default.
+timeout in milleseconds.
+    0 means autoplay is disabled.
+    4000 is probably sane.
+    0 is the default.
+transition is the plugin.
+    It defaults to slide-left-right-wrap.
+shuffle is a boolean.
+    True will randomise the order.
+    It defaults to false.
+start is the zero-based index if the first one that gets shown.
+    random is also allowed.
+    It defaults to 0.
+skipfirstrun is a boolean.
+    True will skip the initial animation.
+    It defaults to False.
+
+nav:
+    position = above/below
+    style = next/jump/thumbnails
+
+    next only:
+        next (default to Next)
+        previous (default to Previous)
+        textseparator (default to /)
+        total = true/false
+        brackets = true/false
+
+    jump only:
+        jumpseparator (default to |)
+        numbering (1 or 01)
+-->
+
+</div> <!-- .sideburnsettings -->
+
+<ul class="sideburn" data-speed="500" data-transition="slide-left-right" data-nav='{"style": "jump", "numbering": "01", "jumpseparator": "|", "total": true, "brackets": true, "next": "Next", "position": "below"}'>
 <li><img src="media/theninja01c.jpg" width="500" height="612"></li>
 <li><img src="media/theninja02c.jpg" width="500" height="612"></li>
 <li><img src="media/theninja03c.jpg" width="500" height="612"></li>
@@ -29,6 +69,13 @@ $(document).ready(function() {
 <li><img src="media/theninja09.jpg" width="500" height="707"></li>
 <li><img src="media/theninja10.jpg" width="500" height="707"></li>
 </ul>
+
+<!--
+TODO:
+* sets of square, portrait, landscape and mixed images,
+* non-image content
+(probably in separate tabs)
+-->
 
 <hr>
 

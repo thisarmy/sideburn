@@ -38,9 +38,12 @@ GOALS
 * Always preload the next item, preload everything if using thumbnails
 
 * Settings:
-    speed (0 instant, default)
+    speed (0 instant, default is 500.)
     timeout (0 no-auto, default)
-    style (see styles and plugins below)
+    transition (see below)
+    shuffle (default false)
+    start (default index or random)
+    skipfirstrun (default false)
 
     nav (json)
         style = next/jump/thumbnails
@@ -53,9 +56,6 @@ GOALS
         jumpseparator (default to |)
         numbering (1 or 01)
 
-    shuffle (default false)
-    start (default index or random)
-    skipfirstrun (default false)
 
 * Events (callbacks?): (TODO)
     - sideburn:initialized
@@ -71,8 +71,8 @@ GOALS
 * Sizes should be recalculated on threshold event. (fallback to window.resize)
 
 
-STYLES
-======
+TRANSITIONS
+===========
 
 fade
 ----
@@ -85,10 +85,10 @@ horizontal
 
 slide left (new ones appear from the right, next to current)
 slide right (new ones appear from the left, next to current)
-TODO: reveal left (new ones appear from the right, below current)
-TODO: reveal right (new ones appear from the left, below current)
 slide left and right (images in a horizontal line)
 slide left and right wrap (images in a horizontal line, wrap around)
+TODO: reveal left (new ones appear from the right, below current)
+TODO: reveal right (new ones appear from the left, below current)
 
 vertical
 --------
@@ -388,10 +388,10 @@ plugins['slide-up-down']
 plugins['slide-up-down-wrap']
 */
 
-function detectPlugin(style) {
+function detectPlugin(name) {
     var plugin = plugins['slide-left-right-wrap'];
-    if (plugins[style]) {
-        plugin = plugins[style];
+    if (plugins[name]) {
+        plugin = plugins[name];
     }
     return plugin;
 }
@@ -483,10 +483,10 @@ var Sideburn = function($ul) {
     });
 
     // load in the settings
-    this.speed = 0;
-    if (this.ul.data('speed')) {
+    this.speed = 500;
+    if (this.ul.data('speed') || this.ul.data('speed') == 0) {
         var speed = parseInt(this.ul.data('speed'), 10);
-        if (speed > 0) {
+        if (speed >= 0) {
             this.speed = speed;
         }
     }
@@ -629,7 +629,7 @@ var Sideburn = function($ul) {
         });
     }
 
-    var Plugin = detectPlugin(this.ul.data('style'));
+    var Plugin = detectPlugin(this.ul.data('transition'));
     this.plugin = new Plugin(sideburn);
 
     // install click handlers on images directly inside list
@@ -782,7 +782,7 @@ Sideburn.prototype._animate = function(oldIndex, newIndex, callback) {
     }
 
     // then resize the ul to be the same size as the new item plus nav
-    // while animating the old and new items according to the style
+    // while animating the old and new items according to the plugin
     var $oldItem = this.items.eq(oldIndex);
     var $newItem = this.items.eq(newIndex);
 

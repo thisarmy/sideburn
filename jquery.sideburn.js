@@ -68,7 +68,7 @@ GOALS
     - sideburn:beforeAnimate($previous, $next)
     - sideburn:afterAnimate($previous, $next)
 
-* Sizes should be recalculated on threshold event. (fallback to window.resize)
+* Sizes should be recalculated on window.resize
 
 
 TRANSITIONS
@@ -660,6 +660,9 @@ var Sideburn = function($ul) {
             'z-index': 1
         });
 
+    this.items.width(this.wrap.width());
+    this.preload.width(this.wrap.width());
+
     // assign initial height if nothing was assigned in css
     if (this.ul.height() < 20) {
         this.ul.css('height', '400px'); // TODO: come up with responsive default
@@ -669,6 +672,15 @@ var Sideburn = function($ul) {
     }
 
     this.show(this.currentIndex);
+
+    var resizefunc = this.resizefunc = function() {
+        sideburn.recalculateSize();
+    };
+    $(window).resize(resizefunc);
+};
+Sideburn.prototype.recalculateSize = function() {
+    this.items.width(this.wrap.width());
+    this.preload.width(this.wrap.width());
 };
 Sideburn.prototype.getId = function(index) {
     return this.items.eq(index).attr('id');
@@ -972,10 +984,12 @@ $.fn.sideburn = function(method) {
         }
 
         if (method == "destroy") {
-            var $wrap = $ul.parents('.sideburn-wrap');
-            if ($ul.data('sideburn') && $wrap.length) {
-                $ul.data('sideburn').pause = true;
-                $ul.data('sideburn').justPaused = true;
+            var $wrap = $ul.parents('.sideburn-wrap'),
+                sideburn = $ul.data('sideburn')
+            if (sideburn && $wrap.length) {
+                sideburn.pause = true;
+                sideburn.justPaused = true;
+                $(window).unbind('resize', sideburn.resizefunc);
                 $ul.removeData('sideburn');
                 $wrap.find('ul,li').removeAttr('style');
                 $ul.find('> li > img:only-child').unbind('click');

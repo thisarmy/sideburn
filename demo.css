@@ -23,18 +23,19 @@ blockquote:before, blockquote:after,
 q:before, q:after {content: '';content: none;}
 table {border-collapse: collapse;border-spacing: 0;}
 
-html {background-color: #fff;}
-.container {padding: 15px; width: 768px;}
-
-.container {width: 500px;}
-img {max-width: 500px; height: auto;}
+html {background-color: #eee;}
+.container {padding: 15px; background-color: #fff;}
+.container {max-width: 500px; margin-right: 330px;}
+.sideburn img {max-width: 100%; height: auto;}
 
 hr {border: none; height: 0; border-top: 1px solid #ccc; margin: 1em 0;}
 
+/*
 @media (max-width: 599px) {
     .container {width: 300px;}
     img {max-width: 300px; height: auto;}
 }
+*/
 
 h1 {font-family: georgia, serif; font-size: 14px; font-variant: small-caps; padding: 5px; margin-bottom: 10px; background-color: #ffa; display: inline-block;}
 
@@ -42,7 +43,7 @@ h1 {font-family: georgia, serif; font-size: 14px; font-variant: small-caps; padd
 
 /* TODO: move to javascript */
 ul.sideburn {list-style-type: none; margin: 0; padding: 0;}
-ul.sideburn li {margin: 0; padding: 0;}
+ul.sideburn li {margin: 0; padding: 0; display: block;}
 ul.sideburn img {display: block;}
 
 .sideburn-wrap {margin: 20px 0;}
@@ -71,7 +72,7 @@ ul.sideburn img {display: block;}
 
 
 #sideburnsettings {font-family: 'Lucida Grande',Verdana,Arial,Helvetica,sans-serif; font-size: 11px; line-height: 18px;}
-#sideburnsettings {float: right; padding: 20px; margin: 20px; width: 250px; background-color: #f2f2f2; color: #333;}
+#sideburnsettings {float: right; padding: 20px; margin: 20px; width: 250px; background-color: #fff; color: #333;}
 #sideburnsettings {border-radius: 3px; box-shadow: 0px 3px 5px 0px #666;}
 .textfield input[type=text] {float: right; width: 75px;}
 .optionsfield .options {float: right;}
@@ -88,8 +89,9 @@ ul.sideburn img {display: block;}
 
 .sliderwrap {float: right; width: 180px; text-align: right;}
 .slider {float: left; width: 125px; height: 4px; background-color: #777; position: relative; margin: 0 5px;}
-.slider {border-top: 7px solid #f2f2f2; border-bottom: 7px solid #f2f2f2; vertical-align: top;}
+.slider {border-top: 7px solid #fff; border-bottom: 7px solid #fff; vertical-align: top;}
 .ui-slider-handle {width: 12px; height: 12px; background-color: #777; position: absolute; top: -4px; margin-left: -6px; border-radius: 3px;}
+.ui-slider-handle {box-shadow: 1px 1px 1px #333;}
 .ui-slider-handle:focus {outline: 0; background-color: #aaa;}
 
 .valuewrap {display: inline-block;}

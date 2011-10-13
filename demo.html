@@ -5,59 +5,309 @@
 <title>Sideburn</title>
 <link rel="stylesheet" href="demo.css">
 <script src="deps/jquery-1.5.1.min.js"></script>
+<script src="deps/jquery-ui-1.8.16.slider.min.js"></script>
+<script src="deps/underscore.min.js"></script>
 <script src="jquery.sideburn.js"></script>
 <script>
+var recalculate = function() {
+    var slideshows = $('ul.sideburn');
+
+    slideshows.sideburn('destroy');
+
+    slideshows
+        .removeAttr('data-speed')
+        .removeAttr('data-timeout')
+        .removeAttr('data-shuffle')
+        .removeAttr('data-transition')
+        .removeAttr('data-skipfirstrun')
+        .removeAttr('data-nav');
+
+    slideshows.data('speed', $('input[name=speed]').val());
+    if ($('#autoplay_yes').is(':checked')) {
+        slideshows.data('timeout', $('input[name=interval]').val());
+    } else {
+        slideshows.data('timeout', 0);
+    }
+
+    slideshows.data('shuffle', $('#shuffle_yes').is(':checked'));
+
+    slideshows.data('transition', $('select[name=transition]').val());
+
+    slideshows.data('skipfirstrun', $('#skipfirstrun_yes').is(':checked'));
+
+    var nav = {
+        position: $('input[name=position]:checked').val(),
+        style: $('input[name=style]:checked').val(),
+        next: $('input[name=next]').val(),
+        previous: $('input[name=previous]').val(),
+        textseparator: $('input[name=textseparator]').val(),
+        total:  $('#total_yes').is(':checked'),
+        brackets: $('#brackets_yes').is(':checked'),
+        jumpseparator: $('input[name=jumpseparator]').val(),
+        numbering: $('input[name=numbering]:checked').val()
+    };
+    slideshows.data('nav', nav);
+
+    slideshows.sideburn();
+};
+var refresh = _.debounce(recalculate, 500);
+
 $(document).ready(function() {
-    $('ul.sideburn').sideburn();
+    var settingswrap = $('#sideburnsettings');
+
+    // sliders
+    $('.sliderfield').each(function() {
+        var fld = $(this),
+            input = fld.find('input'),
+            slider = fld.find('.slider'),
+            value = input.val();
+
+        slider.slider({
+            min: slider.data('min'),
+            max: slider.data('max'),
+            step: slider.data('step'),
+            value: value
+        });
+    });
+    $('.slider').bind('slide', function(event, ui) {
+        var fld = $(this).parents('.sliderfield'),
+            input = fld.find('input'),
+            valueLabel = fld.find('.value'),
+            val = ui.value;
+
+        input.val(val);
+        valueLabel.html(val);
+    });
+
+    // show / hide subsections of the form
+    var
+        radioMap = {
+            'style_next': 'withnext',
+            'style_jump': 'withjump',
+            'autoplay_yes': 'withinterval',
+            'total_yes': 'withbrackets'
+        };
+    settingswrap.find('input[type=radio]').change(function() {
+        for (var id in radioMap) {
+            if (radioMap.hasOwnProperty(id)) {
+                var
+                    className = radioMap[id],
+                    checked = $('#'+id).is(':checked');
+
+                if (checked && !settingswrap.hasClass(className)) {
+                    settingswrap.addClass(className);
+                } else if (!checked && settingswrap.hasClass(className)) {
+                    settingswrap.removeClass(className);
+                }
+            }
+        }
+    });
+
+    settingswrap.find('.slider').bind('slidechange', function() {
+        refresh();
+    });
+    settingswrap.find('input[type=radio],select').change(function() {
+        refresh();
+    });
+    settingswrap.find('input[type=text]').keyup(function() {
+        refresh();
+    });
+
+    recalculate();
 });
 </script>
 </head>
 <body>
+
+<div id="sideburnsettings" class="withnext">
+
+<div class="field sliderfield">
+<label>speed
+<div class="sliderwrap">
+<input type="hidden" name="speed" value="500">
+<div class="slider" id="speed-slider" data-step="100" data-min="0" data-max="2000"></div>
+<div class="valuewrap"><span class="value">500</span>ms</div>
+</div>
+</label>
+</div>
+
+<div class="field selectfield">
+<label for="transition">transition
+<select name="transition">
+<option value="fade">fade</option>
+<option value="slide-left">slide left</option>
+<option value="slide-right">slide right</option>
+<option value="slide-left-right">slide left and right</option>
+<option value="slide-left-right-wrap" selected>wrap around</option>
+</select>
+</label>
+</div>
+
+<div class="field optionsfield">
+autoplay?
+<div class="options">
+<label for="autoplay_yes">
+<input type="radio" name="autoplay" id="autoplay_yes" value="true"> yes
+</label>
+<label for="autoplay_no">
+<input type="radio" name="autoplay" id="autoplay_no" value="false" checked> no
+</label>
+</div>
+</div>
+
+<div class="field sliderfield" id="intervalfield">
+<label for="interval">interval
+<div class="sliderwrap">
+<input type="hidden" name="interval" value="4000">
+<div class="slider" id="interval-slider" data-step="100" data-min="100" data-max="10000"></div>
+<div class="valuewrap"><span class="value">4000</span>ms</div>
+</div>
+</label>
+</div>
+
+<div class="field optionsfield" id="shufflefield">
+shuffle?
+<div class="options">
+<label for="shuffle_yes">
+<input type="radio" name="shuffle" id="shuffle_yes" value="true"> yes
+</label>
+<label for="shuffle_no">
+<input type="radio" name="shuffle" id="shuffle_no" value="false" checked> no
+</label>
+</div>
+</div>
+
+<div class="field optionsfield">
+skip first run?
+<div class="options">
+<label for="skipfirstrun_yes">
+<input type="radio" name="skipfirstrun" id="skipfirstrun_yes" value="true"> yes
+</label>
+<label for="skipfirstrun_no">
+<input type="radio" name="skipfirstrun" id="skipfirstrun_no" value="false" checked> no
+</label>
+</div>
+</div>
+
+<hr>
+
+<div class="field optionsfield">
+nav position
+<div class="options">
+<label for="position_above">
+<input type="radio" name="position" id="position_above" value="above"> above
+</label>
+<label for="position_below">
+<input type="radio" name="position" id="position_below" value="below" checked> below
+</label>
+</div>
+</div>
+
+<div class="field optionsfield">
+nav style
+<div class="options">
+
+<label for="style_next">
+<input type="radio" name="style" id="style_next" value="next" checked> next
+</label>
+
+<label for="style_jump">
+<input type="radio" name="style" id="style_jump" value="jump"> jump
+</label>
+
+<label for="style_thumbnails">
+<input type="radio" name="style" id="style_thumbnails" value="thumbnails"> thumbnails
+</label>
+
+</div>
+</div>
+
+<div id="nextgroup">
+<hr>
+
+<div class="field textfield">
+<label for="previous">previous
+<input type="text" name="previous" value="Previous">
+</label>
+</div>
+
+<div class="field textfield">
+<label for="textseparator">text separator
+<input type="text" name="textseparator" value="/">
+</label>
+</div>
+
+<div class="field textfield">
+<label for="next">next
+<input type="text" name="next" value="Next">
+</label>
+</div>
+
+<div class="field optionsfield">
+show total?
+<div class="options">
+<label for="total_yes">
+<input type="radio" name="total" id="total_yes" value="true"> yes
+</label>
+<label for="total_no">
+<input type="radio" name="total" id="total_no" value="false" checked> no
+</label>
+</div>
+</div>
+
+<div class="field optionsfield" id="bracketsfield">
+add brackets?
+<div class="options">
+<label for="brackets_yes">
+<input type="radio" name="brackets" id="brackets_yes" value="true" checked> (1 of 10)
+</label>
+<label for="brackets_no">
+<input type="radio" name="brackets" id="brackets_no" value="false"> 1 of 10
+</label>
+</div>
+</div>
+
+</div> <!-- #nextgroup -->
+
+<div id="jumpgroup">
+<hr>
+
+<div class="field textfield">
+<label for="jumpseparator">jump separator
+<input type="text" name="jumpseparator" value="|">
+</label>
+</div>
+
+<div class="field optionsfield">
+number style
+<div class="options">
+<label for="numbering_1">
+<input type="radio" name="numbering" id="numbering_1" value="1" checked> 1 | 2
+</label>
+<label for="numbering_01">
+<input type="radio" name="numbering" id="numbering_01" value="01"> 01 | 02
+</label>
+</div>
+</div>
+
+</div> <!-- #jumpgroup -->
+
+</div> <!-- .sideburnsettings -->
+
+
+
+
+
+
+
+
+
+
 <div class="container">
 
 <h1>Sideburn</h1>
 
-<div class="sideburnsettings">
-<!--
-speed in milliseconds.
-    0 means instant.
-    1000 or 500 is probably sane.
-    500 is the default.
-timeout in milleseconds.
-    0 means autoplay is disabled.
-    4000 is probably sane.
-    0 is the default.
-transition is the plugin.
-    It defaults to slide-left-right-wrap.
-shuffle is a boolean.
-    True will randomise the order.
-    It defaults to false.
-start is the zero-based index if the first one that gets shown.
-    random is also allowed.
-    It defaults to 0.
-skipfirstrun is a boolean.
-    True will skip the initial animation.
-    It defaults to False.
-
-nav:
-    position = above/below
-    style = next/jump/thumbnails
-
-    next only:
-        next (default to Next)
-        previous (default to Previous)
-        textseparator (default to /)
-        total = true/false
-        brackets = true/false
-
-    jump only:
-        jumpseparator (default to |)
-        numbering (1 or 01)
--->
-
-</div> <!-- .sideburnsettings -->
-
-<ul class="sideburn" data-speed="500" data-transition="slide-left-right" data-nav='{"style": "jump", "numbering": "01", "jumpseparator": "|", "total": true, "brackets": true, "next": "Next", "position": "below"}'>
+<ul class="sideburn">
 <li><img src="media/theninja01c.jpg" width="500" height="612"></li>
 <li><img src="media/theninja02c.jpg" width="500" height="612"></li>
 <li><img src="media/theninja03c.jpg" width="500" height="612"></li>

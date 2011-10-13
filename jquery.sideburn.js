@@ -897,16 +897,18 @@ Sideburn.prototype.show = function(index) {
         this.busyShowing = true;
         function afterAnimate() {
             sideburn.busyShowing = false;
+            var $current = sideburn.items.eq(index);
             if (sideburn.resized) {
                 sideburn.resized = false;
-                var $current = sideburn.items.eq(index);
-                var height = sideburn.calculateHeight($current);
-                var left = sideburn.calculateLeft($current);
-                var top = sideburn.calculateTop($current);
+                var height = sideburn.calculateHeight($current),
+                    left = sideburn.calculateLeft($current),
+                    top = sideburn.calculateTop($current);
                 sideburn.ul.css('height', height);
                 sideburn.ul.css('left', left);
                 sideburn.ul.css('top', top);
             }
+            sideburn.items.removeClass('start');
+            $current.addClass('start');
             if (sideburn.timeout && !sideburn.pause) {
                 setTimeout(function() {
                     sideburn.next();

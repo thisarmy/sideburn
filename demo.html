@@ -35,18 +35,20 @@ var recalculate = function() {
 
     slideshows.data('skipfirstrun', $('#skipfirstrun_yes').is(':checked'));
 
-    var nav = {
-        position: $('input[name=position]:checked').val(),
-        style: $('input[name=style]:checked').val(),
-        next: $('input[name=next]').val(),
-        previous: $('input[name=previous]').val(),
-        textseparator: $('input[name=textseparator]').val(),
-        total:  $('#total_yes').is(':checked'),
-        brackets: $('#brackets_yes').is(':checked'),
-        jumpseparator: $('input[name=jumpseparator]').val(),
-        numbering: $('input[name=numbering]:checked').val()
-    };
-    slideshows.data('nav', nav);
+    if (!$('#position_none').is(':checked')) {
+        var nav = {
+            position: $('input[name=position]:checked').val(),
+            style: $('input[name=style]:checked').val(),
+            next: $('input[name=next]').val(),
+            previous: $('input[name=previous]').val(),
+            textseparator: $('input[name=textseparator]').val(),
+            total:  $('#total_yes').is(':checked'),
+            totalseparator: $('input[name=totalseparator]').val(),
+            jumpseparator: $('input[name=jumpseparator]').val(),
+            numbering: $('input[name=numbering]:checked').val()
+        };
+        slideshows.data('nav', nav);
+    }
 
     slideshows.sideburn();
 };
@@ -85,7 +87,7 @@ $(document).ready(function() {
             'style_next': 'withnext',
             'style_jump': 'withjump',
             'autoplay_yes': 'withinterval',
-            'total_yes': 'withbrackets'
+            'total_yes': 'withtotalseparator'
         };
     settingswrap.find('input[type=radio]').change(function() {
         for (var id in radioMap) {
@@ -192,13 +194,16 @@ skip first run?
 <hr>
 
 <div class="field optionsfield">
-nav position
+nav
 <div class="options">
 <label for="position_above">
-<input type="radio" name="position" id="position_above" value="above"> above
+<input type="radio" name="position" id="position_above" value="above" checked> above
 </label>
 <label for="position_below">
-<input type="radio" name="position" id="position_below" value="below" checked> below
+<input type="radio" name="position" id="position_below" value="below"> below
+</label>
+<label for="position_none">
+<input type="radio" name="position" id="position_none" value="none"> none
 </label>
 </div>
 </div>
@@ -255,16 +260,10 @@ show total?
 </div>
 </div>
 
-<div class="field optionsfield" id="bracketsfield">
-add brackets?
-<div class="options">
-<label for="brackets_yes">
-<input type="radio" name="brackets" id="brackets_yes" value="true" checked> (1 of 10)
+<div class="field textfield" id="totalseparatorfield">
+<label for="totalseparator">total separator
+<input type="text" name="totalseparator" value=" of ">
 </label>
-<label for="brackets_no">
-<input type="radio" name="brackets" id="brackets_no" value="false"> 1 of 10
-</label>
-</div>
 </div>
 
 </div> <!-- #nextgroup -->

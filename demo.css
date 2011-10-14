@@ -74,18 +74,18 @@ ul.sideburn img {display: block;}
 #sideburnsettings {font-family: 'Lucida Grande',Verdana,Arial,Helvetica,sans-serif; font-size: 11px; line-height: 18px;}
 #sideburnsettings {float: right; padding: 20px; margin: 20px; width: 250px; background-color: #fff; color: #333;}
 #sideburnsettings {border-radius: 3px; box-shadow: 0px 3px 5px 0px #666;}
-.textfield input[type=text] {float: right; width: 75px;}
+.textfield input[type=text] {float: right; width: 100px;}
 .optionsfield .options {float: right;}
 .optionsfield input[type=radio] {vertical-align: middle;}
 .selectfield select {float: right;}
 .field + .field {margin-top: 10px;}
 
 #shufflefield {display: none;} /* still unimplemented */
-#nextgroup, #jumpgroup, #intervalfield, #bracketsfield {display: none;}
+#nextgroup, #jumpgroup, #intervalfield, #totalseparatorfield {display: none;}
 .withnext #nextgroup,
 .withjump #jumpgroup,
 .withinterval #intervalfield,
-.withbrackets #bracketsfield {display: block;}
+.withtotalseparator #totalseparatorfield {display: block;}
 
 .sliderwrap {float: right; width: 180px; text-align: right;}
 .slider {float: left; width: 125px; height: 4px; background-color: #777; position: relative; margin: 0 5px;}

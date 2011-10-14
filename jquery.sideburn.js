@@ -7,7 +7,7 @@ EXAMPLE
 <ul class="sideburn"
     data-speed="1000"
     data-style="reveal-left"
-    data-nav="{style='next', total=true, brackets=true, position='above'}"
+    data-nav="{style='next', total=true, position='above'}"
 >
 <li><img src="image1.png"></li>
 <li><img src="image2.png"></li>
@@ -19,8 +19,12 @@ becomes:
 
 <div class="sideburn-wrap">
 <div class="sideburn-nav sideburn-nav-next sideburn-nav-above">
-    <span class="previous">Previous</span> <span class="separator">/</span> <span class="next">Next</span>
-    <span class="position">(<span class="current">1</span> of <span class="total">4</span>)</span>
+    <span class="position"><span class="current">1</span> /
+        <span class="total">4</span></span>
+    <span class="separator">/</span>
+    <span class="previous">Previous</span>
+    <span class="separator">/</span>
+    <span class="next">Next</span>
 </div>
 <ul ...>...</ul>
 <div class="sideburn-loader">loading...</div>
@@ -51,7 +55,6 @@ GOALS
         previous (default to Previous)
         textseparator (default to /)
         total = true/false
-        brackets = true/false
         position = above/below
         jumpseparator (default to |)
         numbering (1 or 01)
@@ -504,10 +507,10 @@ var Sideburn = function($ul) {
             style: 'next',
             position: 'above',
             total: (nav.total) ? true : false,
-            brackets: (nav.brackets) ? true : false,
             next: nav.next || 'Next',
             previous: nav.previous || 'Previous',
             textseparator: nav.textseparator || '/',
+            totalseparator: nav.totalseparator || ' of ',
             numbering: '1',
             jumpseparator: nav.jumpseparator || '|'
         };
@@ -549,21 +552,19 @@ var Sideburn = function($ul) {
         html += '<div class="sideburn-nav sideburn-nav-'+this.nav.style+
         ' sideburn-nav-'+this.nav.position+'">';
         if (this.nav.style == 'next') {
-            html += '<span class="previous">'+this.nav.previous+'</span> ';
-            html += '<span class="separator">'+this.nav.textseparator+'</span> ';
-            html += '<span class="next">'+this.nav.next+'</span> ';
             if (this.nav.total) {
                 html += '<span class="position">';
-                if (this.nav.brackets) {
-                    html += '(';
-                }
-                html += '<span class="current">'+(this.currentIndex+1)+'</span> ';
-                html += 'of <span class="total">'+this.numItems+'</span>';
-                if (this.nav.brackets) {
-                    html += ')';
-                }
-                html += '</span>';
+                html += '<span class="current">'+(this.currentIndex+1)+
+                    '</span>'+this.nav.totalseparator;
+                html += '<span class="total">'+this.numItems+'</span>';
+                html += '</span> ';
+                html += '<span class="separator">'+this.nav.textseparator+
+                    '</span> ';
             }
+            html += '<span class="previous">'+this.nav.previous+'</span> ';
+            html += '<span class="separator">'+this.nav.textseparator+
+                '</span> ';
+            html += '<span class="next">'+this.nav.next+'</span>';
         }
         if (nav.style == 'jump') {
             var label,
@@ -578,7 +579,8 @@ var Sideburn = function($ul) {
                 selected = '';
                 selected = (i == this.currentIndex) ? ' selected' : '';
                 parts = [];
-                parts.push('<span class="jump'+selected+'" data-index="'+i+'">');
+                parts.push('<span class="jump'+selected+'" data-index="'+i+
+                    '">');
                 parts.push(label);
                 parts.push('</span>');
                 bits.push(parts.join(''));
@@ -665,7 +667,7 @@ var Sideburn = function($ul) {
 
     // assign initial height if nothing was assigned in css
     if (this.ul.height() < 20) {
-        this.ul.css('height', '400px'); // TODO: come up with responsive default
+        this.ul.css('height', '400px'); // TODO: better default?
     }
     if (this.plugin.init) {
         this.plugin.init();
@@ -712,7 +714,8 @@ Sideburn.prototype.getAllUncachedUrls = function() {
 Sideburn.prototype.calculateTop = function($li) {
 /*
     Calculate the item's "home" position.
-    Typically 0, but it might change and some plugins might just do weird things.
+    Typically 0, but it might change and some plugins might just do weird
+    things.
 */
     if (this.plugin.calculateTop) {
         return this.plugin.calculateTop($li);
@@ -723,7 +726,8 @@ Sideburn.prototype.calculateTop = function($li) {
 Sideburn.prototype.calculateLeft = function($li) {
 /*
     Calculate the item's "home" position.
-    Typically 0, but it might change and some plugins might just do weird things.
+    Typically 0, but it might change and some plugins might just do weird
+    things.
 */
     if (this.plugin.calculateLeft) {
         return this.plugin.calculateLeft($li);
@@ -747,9 +751,9 @@ Sideburn.prototype.calculateWidth = function($li) {
 Sideburn.prototype.calculateHeight = function($li) {
 /*
     Calculate the ul element's height.
-    This is usually the same as the current item, but for some plugins it might be
-    as high as the highest item, because multiple items are visible at the same
-    time.
+    This is usually the same as the current item, but for some plugins it might
+    be as high as the highest item, because multiple items are visible at the
+    same time.
     Or something else entirely. Who knows?
 */
     if (this.plugin.calculateHeight) {

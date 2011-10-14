@@ -50,14 +50,17 @@ GOALS
     skipfirstrun (default false)
 
     nav (json)
-        style = next/jump/thumbnails
-        next (default to Next)
-        previous (default to Previous)
-        textseparator (default to /)
-        total = true/false
         position = above/below
-        jumpseparator (default to |)
+        style = next/jump/thumbnails
+        navSeparator (default to /)
+        nextText (default to Next)
+        previousText (default to Previous)
+        showTotal = true/false
+        totalSeparator (default to or)
         numbering (1 or 01)
+        showAll = true/false
+        allText (default to show all)
+        oneText (default to show one)
 
 
 * Events (callbacks?): (TODO)
@@ -403,10 +406,12 @@ var Sideburn = function($ul) {
     var sideburn = this;
 
     this.currentIndex = 0;
+    this.resizing = false;
+    this.resizefunc = null;
     this.firstRun = true;
     this.skipFirstRun = false;
     this.busyShowing = false;
-    this.resized = false;
+    //this.resized = false;
     this.pause = false;
     this.justPaused = false;
 
@@ -504,15 +509,17 @@ var Sideburn = function($ul) {
     if (this.ul.data('nav')) {
         var nav = this.ul.data('nav');
         this.nav = {
-            style: 'next',
             position: 'above',
-            total: (nav.total) ? true : false,
-            next: nav.next || 'Next',
-            previous: nav.previous || 'Previous',
-            textseparator: nav.textseparator || '/',
-            totalseparator: nav.totalseparator || ' of ',
+            style: 'next',
+            navSeparator: nav.navSeparator || '/',
+            nextText: nav.nextText || 'Next',
+            previousText: nav.previousText || 'Previous',
+            showTotal: (nav.showTotal) ? true : false,
+            totalSeparator: nav.totalSeparator || ' or ',
             numbering: '1',
-            jumpseparator: nav.jumpseparator || '|'
+            showAll: (nav.showAll) ? true : false,
+            allText: nav.allText || 'Show all',
+            oneText: nav.oneText || 'Show one'
         };
         if (['next', 'jump', 'thumbnails'].indexOf(nav.style) != -1) {
             this.nav.style = nav.style
@@ -543,6 +550,7 @@ var Sideburn = function($ul) {
             this.currentIndex = this.items.index(filtered);
         }
     }
+    // the animation that plays after preloading
     this.skipFirstRun = (this.ul.data('skipfirstrun')) ? true : false;
 
     // add the navigation div if there should be nav (start out hidden)
@@ -552,19 +560,28 @@ var Sideburn = function($ul) {
         html += '<div class="sideburn-nav sideburn-nav-'+this.nav.style+
         ' sideburn-nav-'+this.nav.position+'">';
         if (this.nav.style == 'next') {
-            if (this.nav.total) {
+            if (this.nav.showTotal) {
                 html += '<span class="position">';
                 html += '<span class="current">'+(this.currentIndex+1)+
-                    '</span>'+this.nav.totalseparator;
+                    '</span>'+this.nav.totalSeparator;
                 html += '<span class="total">'+this.numItems+'</span>';
                 html += '</span> ';
-                html += '<span class="separator">'+this.nav.textseparator+
+                html += '<span class="separator">'+this.nav.navSeparator+
                     '</span> ';
+                html += '</span>'; // close position
             }
-            html += '<span class="previous">'+this.nav.previous+'</span> ';
-            html += '<span class="separator">'+this.nav.textseparator+
+            html += '<span class="previous">'+this.nav.previousText+'</span> ';
+            html += '<span class="separator">'+this.nav.navSeparator+
                 '</span> ';
-            html += '<span class="next">'+this.nav.next+'</span>';
+            html += '<span class="next">'+this.nav.nextText+'</span>';
+            if (this.nav.showAll) {
+                html += ' <span class="separator">'+this.nav.navSeparator+
+                    '</span> ';
+                html += ' <span class="toggleall">';
+                html += '<span class="all">'+this.nav.allText+'</span> ';
+                html += '<span class="one">'+this.nav.oneText+'</span>';
+                html += '</span>'; // close toggleall
+            }
         }
         if (nav.style == 'jump') {
             var label,
@@ -586,7 +603,7 @@ var Sideburn = function($ul) {
                 bits.push(parts.join(''));
             }
             html += bits.join(' <span class="separator">'+
-                this.nav.jumpseparator+'</span> ');
+                this.nav.navSeparator+'</span> ');
         }
         if (nav.style == 'thumbnails') {
             var selected,
@@ -614,7 +631,7 @@ var Sideburn = function($ul) {
             this.wrap.append(html);
         }
         this.nav.element = this.wrap.find('> .sideburn-nav');
-        if (this.nav.total) {
+        if (this.nav.showTotal) {
             this.nav.currentElement = this.nav.element.find('.current');
         }
         this.nav.element.find('.previous').click(function() {
@@ -622,6 +639,12 @@ var Sideburn = function($ul) {
         });
         this.nav.element.find('.next').click(function() {
             sideburn.next();
+        });
+        this.nav.element.find('.all').click(function() {
+            sideburn.all();
+        });
+        this.nav.element.find('.one').click(function() {
+            sideburn.one();
         });
         this.nav.element.find('.jump').click(function() {
             sideburn.show($(this).data('index'));
@@ -663,11 +686,13 @@ var Sideburn = function($ul) {
         });
 
     this.items.width(this.wrap.width());
-    this.preload.width(this.wrap.width());
+    //this.preload.width(this.wrap.width()); // gets set later
 
-    // assign initial height if nothing was assigned in css
+    // assign initial dimensions if nothing was assigned in css
     if (this.ul.height() < 20) {
-        this.ul.css('height', '400px'); // TODO: better default?
+        // we just make it the width squared
+        this.ul.width(this.wrap.width());
+        this.ul.height(this.wrap.width());
     }
     if (this.plugin.init) {
         this.plugin.init();
@@ -675,14 +700,17 @@ var Sideburn = function($ul) {
 
     this.show(this.currentIndex);
 
-    var resizefunc = this.resizefunc = function() {
-        sideburn.recalculateSize();
-    };
-    $(window).resize(resizefunc);
+    if (window._) {
+        var resizefunc = this.resizefunc = _.debounce(function() {
+            sideburn.recalculateSize();
+        }, 500);
+        $(window).resize(resizefunc);
+    }
 };
 Sideburn.prototype.recalculateSize = function() {
     this.items.width(this.wrap.width());
     this.preload.width(this.wrap.width());
+    this._adjustDimensions(this.currentIndex, this.speed);
 };
 Sideburn.prototype.getId = function(index) {
     return this.items.eq(index).attr('id');
@@ -802,15 +830,30 @@ Sideburn.prototype._animate = function(oldIndex, newIndex, callback) {
     var $oldItem = this.items.eq(oldIndex);
     var $newItem = this.items.eq(newIndex);
 
-    var width = this.calculateWidth($newItem);
-    var height = this.calculateHeight($newItem);
-    this.ul.animate({
-        'width': width,
-        'height': height
-    }, this.speed);
+    // smoothly animate the ul's dimensions to fit the new item
+    this._adjustDimensions(newIndex, this.speed);
 
     // then call the callback
     this.plugin.animate($oldItem, $newItem, callback);
+};
+Sideburn.prototype._adjustDimensions = function(index, speed) {
+    if (this.resizing) {
+        return;
+    }
+
+    this.resizing = true;
+
+    var sideburn = this,
+        $item = this.items.eq(index),
+        width = this.calculateWidth($item),
+        height = this.calculateHeight($item);
+
+    this.ul.animate({
+        'width': width,
+        'height': height
+    }, speed, function() {
+        sideburn.resizing = false;
+    });
 };
 Sideburn.prototype._initialAnimate = function(index, callback) {
 /*
@@ -836,12 +879,8 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
         .css('left', this.calculateLeft($first))
         .hide();
 
-    var width = this.calculateWidth($first);
-    var height = this.calculateHeight($first);
-    this.ul.animate({
-        'width': width,
-        'height': height
-    }, speed);
+    // smoothly adjust the dimensions
+    this._adjustDimensions(index, speed);
 
     $first.fadeIn(speed, callback);
 };
@@ -865,7 +904,8 @@ Sideburn.prototype._preload = function(urls, callback) {
         }
         if (waiting.length) {
             urls = waiting;
-            setTimeout(check, 1000);
+            //setTimeout(check, 1000);
+            setTimeout(check, 100);
         } else {
             callback();
         }
@@ -877,7 +917,7 @@ Sideburn.prototype.updateNav = function() {
         return;
     }
     if (this.nav.style == 'next') {
-        if (this.nav.total) {
+        if (this.nav.showTotal) {
             this.nav.currentElement.html(this.currentIndex+1);
         }
     }
@@ -910,10 +950,11 @@ Sideburn.prototype.show = function(index) {
     if (this.busyShowing) {
         // queue the click?
     } else {
-        this.busyShowing = true;
+        this.busyShowing = true; // TODO: set class, disabled cursor?
         function afterAnimate() {
             sideburn.busyShowing = false;
             var $current = sideburn.items.eq(index);
+            /*
             if (sideburn.resized) {
                 sideburn.resized = false;
                 var height = sideburn.calculateHeight($current),
@@ -923,6 +964,7 @@ Sideburn.prototype.show = function(index) {
                 sideburn.ul.css('left', left);
                 sideburn.ul.css('top', top);
             }
+            */
             sideburn.items.removeClass('start');
             $current.addClass('start');
             if (sideburn.timeout && !sideburn.pause) {
@@ -938,6 +980,9 @@ Sideburn.prototype.show = function(index) {
             if (sideburn.firstRun) {
                 sideburn.firstRun = false;
                 sideburn._initialAnimate(index, afterAnimate);
+            } else if (sideburn.showAll) {
+                // going from showAll to showOne
+                sideburn.one();
             } else {
                 sideburn._animate(previousIndex, index, afterAnimate);
             }
@@ -976,6 +1021,92 @@ Sideburn.prototype.previous = function() {
     }
     this.show(nextIndex);
 };
+Sideburn.prototype.all = function() {
+/*
+    Switch to show all.
+*/
+    var sideburn = this,
+        maxWidth = 0,
+        t = 0;
+
+    this.busyShowing = true;
+    this.showAll = true;
+    this.wrap.addClass('sideburn-nav-all');
+
+    // spread them out
+    this.items.show();
+    this.items.each(function(index) {
+        var $li = $(this),
+            width = sideburn.calculateWidth($li);
+
+        // just in case the items aren't all the same width
+        if (width > maxWidth) {
+            maxWidth = width;
+        }
+
+        // first on top
+        if (index == sideburn.currentIndex) {
+            $li.css('z-index', 1);
+        } else {
+            $li.css('z-index', 0);
+        }
+        $li.css({
+            'left': 0
+        });
+        $li.animate({
+            'top': t,
+            'left': 0 // just in case
+        }, sideburn.speed);
+
+        t += sideburn.calculateHeight($li);
+    });
+
+    // size the ul to fit them all
+    this.ul.animate({
+        width: maxWidth,
+        height: t
+    }, this.speed, function() {
+        sideburn.busyShowing = false;
+        sideburn.items.css('z-index', 1); // clean up again
+    });
+};
+Sideburn.prototype.one = function() {
+/*
+    Switch to show one.
+*/
+    var sideburn = this,
+        $current = this.items.eq(this.currentIndex),
+        $others = this.items.not($current),
+        width = this.calculateWidth($current),
+        height = this.calculateHeight($current);
+
+    this.busyShowing = true;
+    this.showAll = false;
+    this.wrap.removeClass('sideburn-nav-all');
+
+    // put the current one on top of the others
+    $current.css('z-index', 1);
+    $others.css('z-index', 0);
+
+    // move them all up again
+    this.items.each(function() {
+        var $li = $(this);
+        $li.animate({
+            'top': 0, // calculateLeft rather?
+            'left': 0 // calculateTop rahter?
+        }, sideburn.speed);
+    });
+
+    // size the ul to fit just the current one
+    this.ul.animate({
+        width: width,
+        height: height
+    }, this.speed, function() {
+        sideburn.busyShowing = false;
+        sideburn.items.css('z-index', 1); // clean up again
+        $others.hide();
+    });
+};
 
 $.fn.sideburn = function(method) {
     this.each(function() {
@@ -993,7 +1124,9 @@ $.fn.sideburn = function(method) {
             if (sideburn && $wrap.length) {
                 sideburn.pause = true;
                 sideburn.justPaused = true;
-                $(window).unbind('resize', sideburn.resizefunc);
+                if (sideburn.resizefunc) {
+                    $(window).unbind('resize', sideburn.resizefunc);
+                }
                 $ul.removeData('sideburn');
                 $wrap.find('ul,li').removeAttr('style');
                 $ul.find('> li > img:only-child').unbind('click');

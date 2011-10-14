@@ -29,7 +29,8 @@ var recalculate = function() {
         slideshows.data('timeout', 0);
     }
 
-    slideshows.data('shuffle', $('#shuffle_yes').is(':checked'));
+    //slideshows.data('shuffle', $('#shuffle_yes').is(':checked'));
+    slideshows.data('shuffle', false);
 
     slideshows.data('transition', $('select[name=transition]').val());
 
@@ -39,13 +40,15 @@ var recalculate = function() {
         var nav = {
             position: $('input[name=position]:checked').val(),
             style: $('input[name=style]:checked').val(),
-            next: $('input[name=next]').val(),
-            previous: $('input[name=previous]').val(),
-            textseparator: $('input[name=textseparator]').val(),
-            total:  $('#total_yes').is(':checked'),
-            totalseparator: $('input[name=totalseparator]').val(),
-            jumpseparator: $('input[name=jumpseparator]').val(),
-            numbering: $('input[name=numbering]:checked').val()
+            navSeparator: $('input[name=navseparator]').val(),
+            nextText: $('input[name=nexttext]').val(),
+            previousText: $('input[name=previoustext]').val(),
+            showTotal:  $('#showtotal_yes').is(':checked'),
+            totalSeparator: $('input[name=totalseparator]').val(),
+            numbering: $('input[name=numbering]:checked').val(),
+            showAll:  $('#showall_yes').is(':checked'),
+            allText: $('input[name=alltext]').val(),
+            oneText: $('input[name=onetext]').val()
         };
         slideshows.data('nav', nav);
     }
@@ -87,7 +90,9 @@ $(document).ready(function() {
             'style_next': 'withnext',
             'style_jump': 'withjump',
             'autoplay_yes': 'withinterval',
-            'total_yes': 'withtotalseparator'
+            'showtotal_yes': 'withtotalseparator',
+            'showall_yes': 'withall',
+            'style_thumbnails': 'withoutnavseparator'
         };
     settingswrap.find('input[type=radio]').change(function() {
         for (var id in radioMap) {
@@ -167,6 +172,7 @@ autoplay?
 </label>
 </div>
 
+<!--
 <div class="field optionsfield" id="shufflefield">
 shuffle?
 <div class="options">
@@ -178,6 +184,7 @@ shuffle?
 </label>
 </div>
 </div>
+-->
 
 <div class="field optionsfield">
 skip first run?
@@ -227,35 +234,35 @@ nav style
 </div>
 </div>
 
-<div id="nextgroup">
+<div class="field textfield" id="navstylefield">
+<label for="navseparator">nav separator
+<input type="text" name="navseparator" value="/">
+</label>
+</div>
+
+<div class="group" id="nextgroup">
 <hr>
 
 <div class="field textfield">
-<label for="previous">previous
-<input type="text" name="previous" value="Previous">
+<label for="previoustext">previous
+<input type="text" name="previoustext" value="Previous">
 </label>
 </div>
 
 <div class="field textfield">
-<label for="textseparator">text separator
-<input type="text" name="textseparator" value="/">
-</label>
-</div>
-
-<div class="field textfield">
-<label for="next">next
-<input type="text" name="next" value="Next">
+<label for="nexttext">next
+<input type="text" name="nexttext" value="Next">
 </label>
 </div>
 
 <div class="field optionsfield">
 show total?
 <div class="options">
-<label for="total_yes">
-<input type="radio" name="total" id="total_yes" value="true"> yes
+<label for="showtotal_yes">
+<input type="radio" name="showtotal" id="showtotal_yes" value="true"> yes
 </label>
-<label for="total_no">
-<input type="radio" name="total" id="total_no" value="false" checked> no
+<label for="showtotal_no">
+<input type="radio" name="showtotal" id="showtotal_no" value="false" checked> no
 </label>
 </div>
 </div>
@@ -266,25 +273,47 @@ show total?
 </label>
 </div>
 
+<div class="field optionsfield">
+include show all?
+<div class="options">
+<label for="showall_yes">
+<input type="radio" name="showall" id="showall_yes" value="true"> yes
+</label>
+<label for="total_no">
+<input type="radio" name="showall" id="showall_no" value="false" checked> no
+</label>
+</div>
+</div>
+
+<div class="group" id="allgroup">
+
+<div class="field textfield">
+<label for="alltext">show all
+<input type="text" name="alltext" value="Show all">
+</label>
+</div>
+
+<div class="field textfield">
+<label for="onetext">show one
+<input type="text" name="onetext" value="Show one">
+</label>
+</div>
+
+</div> <!-- #allgroup -->
+
 </div> <!-- #nextgroup -->
 
 <div id="jumpgroup">
 <hr>
 
-<div class="field textfield">
-<label for="jumpseparator">jump separator
-<input type="text" name="jumpseparator" value="|">
-</label>
-</div>
-
 <div class="field optionsfield">
 number style
 <div class="options">
 <label for="numbering_1">
-<input type="radio" name="numbering" id="numbering_1" value="1" checked> 1 | 2
+<input type="radio" name="numbering" id="numbering_1" value="1" checked> 1 2 .. 10
 </label>
 <label for="numbering_01">
-<input type="radio" name="numbering" id="numbering_01" value="01"> 01 | 02
+<input type="radio" name="numbering" id="numbering_01" value="01"> 01 02 .. 10
 </label>
 </div>
 </div>
@@ -303,8 +332,6 @@ number style
 
 
 <div class="container">
-
-<h1>Sideburn</h1>
 
 <ul class="sideburn">
 <li><img src="media/theninja01c.jpg" width="500" height="612"></li>
@@ -325,11 +352,9 @@ TODO:
 * non-image content
 (probably in separate tabs)
 -->
-
-<hr>
-
-<p>See <a href="http://github.com/thisarmy/sideburn">http://github.com/thisarmy/sideburn</a></p>
-
 </div>
+
+<p class="footer">See <a href="http://github.com/thisarmy/sideburn">http://github.com/thisarmy/sideburn</a></p>
+
 </body>
 </html>

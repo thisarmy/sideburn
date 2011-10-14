@@ -1119,6 +1119,8 @@ $.fn.sideburn = function(method) {
         }
 
         if (method == "destroy") {
+            // NOTE: this doesn't currently reset class="current".
+            // That's a feature, not a bug ;)
             var $wrap = $ul.parents('.sideburn-wrap'),
                 sideburn = $ul.data('sideburn')
             if (sideburn && $wrap.length) {

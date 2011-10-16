@@ -78,14 +78,14 @@ var recalculate = function() {
     fakeWrap.append(fake);
 
     // BUG: this will replace < and > inside text in the JSON attributes too
-    $('#html').html(
+    $('#htmlcode').html(
         fakeWrap.html()
             .replace(/,/g, ', ')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/ data-/g, "<br> data-")
         );
-    $('#json').html(JSON.stringify(data).replace(/,/g, ', ')
+    $('#jsoncode').html(JSON.stringify(data).replace(/,/g, ', ')
 );
 
     // only initialize the one that's visible
@@ -411,9 +411,9 @@ number style
 
 <div class="codeblocks">
 <h2 class="toggle" title="toggle">HTML</h2>
-<div id="html" class="code"></div>
+<div id="htmlcode" class="code"></div>
 <h2 class="toggle" title="toggle">JSON</h2>
-<div id="json" class="code"></div>
+<div id="jsoncode" class="code"></div>
 </div>
 
 </div> <!-- .sideburnsettings -->

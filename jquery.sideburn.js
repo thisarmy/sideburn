@@ -685,20 +685,14 @@ var Sideburn = function($ul) {
             'z-index': 1
         });
 
-    this.items.width(this.wrap.width());
-    //this.preload.width(this.wrap.width()); // gets set later
+    var width = this.wrap.width();
 
-    // assign initial dimensions if nothing was assigned in css
-    if (this.ul.height() < 20) {
-        // we just make it the width squared
-        this.ul.width(this.wrap.width());
-        this.ul.height(this.wrap.width());
-    }
+    this.items.width(width);
+    this.ul.width(width);
+
     if (this.plugin.init) {
         this.plugin.init();
     }
-
-    this.show(this.currentIndex);
 
     if (window._) {
         var resizefunc = this.resizefunc = _.debounce(function() {
@@ -706,11 +700,21 @@ var Sideburn = function($ul) {
         }, 500);
         $(window).resize(resizefunc);
     }
+
+    this.show(this.currentIndex);
 };
-Sideburn.prototype.recalculateSize = function() {
-    this.items.width(this.wrap.width());
-    this.preload.width(this.wrap.width());
-    this._adjustDimensions(this.currentIndex, this.speed);
+Sideburn.prototype.recalculateSize = function(immediate) {
+    var w = this.wrap.width();
+    if (!w) {
+        return; // the slideshow is probably not visible
+    }
+    this.items.width(w);
+    this.preload.width(w);
+    var speed = this.speed;
+    if (immediate) {
+        speed = 0;
+    }
+    this._adjustDimensions(this.currentIndex, speed);
 };
 Sideburn.prototype.getId = function(index) {
     return this.items.eq(index).attr('id');
@@ -770,11 +774,13 @@ Sideburn.prototype.calculateWidth = function($li) {
     be as wide as the available area with multiple items visible at once.
     Or something else entirely. Who knows?
 */
+    var width;
     if (this.plugin.calculateWidth) {
-        return this.plugin.calculateWidth($li);
+        width = this.plugin.calculateWidth($li);
     } else {
-        return $li.width();
+        width = $li.width();
     }
+    return width;
 };
 Sideburn.prototype.calculateHeight = function($li) {
 /*
@@ -784,11 +790,13 @@ Sideburn.prototype.calculateHeight = function($li) {
     same time.
     Or something else entirely. Who knows?
 */
+    var height;
     if (this.plugin.calculateHeight) {
-        return this.plugin.calculateHeight($li);
+        height = this.plugin.calculateHeight($li);
     } else {
-        return $li.height();
+        height = $li.height();
     }
+    return height;
 };
 Sideburn.prototype._showLoader = function() {
 /*
@@ -797,11 +805,7 @@ Sideburn.prototype._showLoader = function() {
 */
     this.wrap.addClass('sideburn-loading');
     var w = this.wrap.width();
-    var h = this.wrap.height();
-    this.preload
-        .width(w)
-        .height(h)
-        .css('line-height', h+'px');
+    this.preload.width(w);
 };
 Sideburn.prototype._hideLoader = function() {
 /*
@@ -831,7 +835,8 @@ Sideburn.prototype._animate = function(oldIndex, newIndex, callback) {
     var $newItem = this.items.eq(newIndex);
 
     // smoothly animate the ul's dimensions to fit the new item
-    this._adjustDimensions(newIndex, this.speed);
+    //this._adjustDimensions(newIndex, this.speed);
+    this.recalculateSize();
 
     // then call the callback
     this.plugin.animate($oldItem, $newItem, callback);
@@ -879,8 +884,8 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
         .css('left', this.calculateLeft($first))
         .hide();
 
-    // smoothly adjust the dimensions
-    this._adjustDimensions(index, speed);
+    // adjust the dimensions
+    this.recalculateSize(true);
 
     $first.fadeIn(speed, callback);
 };
@@ -1134,6 +1139,9 @@ $.fn.sideburn = function(method) {
                 $ul.find('> li > img:only-child').unbind('click');
                 $wrap.replaceWith($ul);
             }
+        } else if (method == "refresh") {
+            sideburn = $ul.data('sideburn')
+            sideburn.recalculateSize();
         } else {
             var sideburn = new Sideburn($ul);
             $ul.data('sideburn', sideburn);

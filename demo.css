@@ -23,17 +23,15 @@ blockquote:before, blockquote:after,
 q:before, q:after {content: '';content: none;}
 table {border-collapse: collapse;border-spacing: 0;}
 
-html {background-color: #eee; font-family: georgia, sans-serif; font-size: 14px; line-height: 1.4;}
-.container {margin: 20px; margin-bottom: 0; padding: 20px; background-color: #fff;}
-.container {max-width: 500px; margin-right: 330px;}
+html {background-color: #f2f2f2; font-family: georgia, sans-serif; font-size: 14px; line-height: 1.4;}
+.stage {margin: 20px 0;}
+.preview {padding: 20px; background-color: #fff; border: 1px solid #ccc;}
+.preview {margin-left: 290px; margin-right: 20px; max-width: 600px;}
 .sideburn img {max-width: 100%; height: auto;}
 
 hr {border: none; height: 0; border-top: 1px solid #ccc; margin: 1em 0;}
 a {color: blue;}
-
-
-
-p.footer {padding: 20px 30px;}
+p.footer {margin-top: 20px; clear: both;}
 
 /* ---- */
 
@@ -64,7 +62,7 @@ ul.sideburn img {display: block;}
 .sideburn-nav .one {display: none;}
 .sideburn-nav-all .all {display: none;}
 .sideburn-nav-all .one {display: inline;}
-.sideburn-loader {background-color: #eee; display: none; text-align: center; color: #000;}
+.sideburn-loader {background-color: #f8f8f8; display: none; text-align: center; color: #666; padding: 20px 0; border-radius: 5px;}
 .sideburn-loading .sideburn-loader {display: block;}
 
 .sideburn-nav ul.thumbnails {list-style-type: none; margin: 0; padding: 0; text-align: center;}
@@ -76,8 +74,7 @@ ul.sideburn img {display: block;}
 
 
 #sideburnsettings {font-family: 'Lucida Grande',Verdana,Arial,Helvetica,sans-serif; font-size: 11px; line-height: 18px;}
-#sideburnsettings {position: absolute; top: 20px; right: 20px; padding: 20px;width: 250px; background-color: #fff; color: #333;}
-#sideburnsettings {border-radius: 3px; box-shadow: 0px 3px 5px 0px #666;}
+#sideburnsettings {float: left; padding: 20px; width: 250px; background-color: #f2f2f2; color: #333;}
 .textfield input[type=text] {float: right; width: 100px;}
 .optionsfield .options {float: right;}
 .optionsfield input[type=radio] {vertical-align: middle;}
@@ -95,7 +92,7 @@ ul.sideburn img {display: block;}
 
 .sliderwrap {float: right; width: 180px; text-align: right;}
 .slider {float: left; width: 125px; height: 4px; background-color: #777; position: relative; margin: 0 5px;}
-.slider {border-top: 7px solid #fff; border-bottom: 7px solid #fff; vertical-align: top;}
+.slider {border-top: 7px solid #f2f2f2; border-bottom: 7px solid #f2f2f2; vertical-align: top;}
 .ui-slider-handle {width: 12px; height: 12px; background-color: #777; position: absolute; top: -4px; margin-left: -6px; border-radius: 3px;}
 .ui-slider-handle {box-shadow: 1px 1px 1px #333;}
 .ui-slider-handle:focus {outline: 0; background-color: #aaa;}
@@ -103,7 +100,25 @@ ul.sideburn img {display: block;}
 .valuewrap {display: inline-block;}
 
 
+ul.tabs {display: block; margin: 0 0 20px 0; padding: 0; border-bottom: solid 1px #ddd; list-style: none outside; height: 30px;}
+ul.tabs li {display: block; width: auto; height: 30px; padding: 0; float: left; margin-bottom: 0; line-height: 18px;}
+ul.tabs li a {color: #333; display: block; text-decoration: none; width: auto; height: 29px; padding: 0px 20px; line-height: 30px; border: solid 1px #ddd; border-width: 1px 1px 0 0; margin: 0; background: #f5f5f5; font-size: 13px;}
+ul.tabs li a.active {color: #000; background: #fff; height: 30px; position: relative; top: -4px; padding-top: 4px; border-left-width: 1px; margin: 0 0 0 -1px; color: #111; -moz-border-radius-topleft: 2px; -webkit-border-top-left-radius: 2px; border-top-left-radius: 2px; -moz-border-radius-topright: 2px; -webkit-border-top-right-radius: 2px; border-top-right-radius: 2px;}
+ul.tabs li:first-child a.active {margin-left: 0;}
+ul.tabs li:first-child a {border-width: 1px 1px 0 1px; -moz-border-radius-topleft: 2px; -webkit-border-top-left-radius: 2px; border-top-left-radius: 2px;}
+ul.tabs li:last-child a {-moz-border-radius-topright: 2px; -webkit-border-top-right-radius: 2px; border-top-right-radius: 2px;}
+
+ul.tabs-content {margin: 0; display: block;}
+ul.tabs-content > li {display: none;}
+ul.tabs-content > li.active {display: block;}
+
+/* Clearfixing tabs for beautiful stacking */
+ul.tabs:before,
+ul.tabs:after {content: '\0020'; display: block; overflow: hidden; visibility: hidden; width: 0; height: 0;}
+ul.tabs:after {clear: both;}
+ul.tabs {zoom: 1;}
 
 @media (max-width: 640px) {
-    #sideburnsettings {position: static; margin: 20px;}
+    #sideburnsettings {float: none;}
+    .preview {margin-left: 0; margin-right: 0; border: none;}
 }

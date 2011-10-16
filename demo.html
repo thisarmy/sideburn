@@ -16,11 +16,17 @@ var recalculate = function() {
 
     slideshows
         .removeAttr('data-speed')
+        .removeData('data-speed')
         .removeAttr('data-timeout')
+        .removeData('data-timeout')
         .removeAttr('data-shuffle')
+        .removeData('data-shuffle')
         .removeAttr('data-transition')
+        .removeData('data-transition')
         .removeAttr('data-skipfirstrun')
-        .removeAttr('data-nav');
+        .removeData('data-skipfirstrun')
+        .removeAttr('data-nav')
+        .removeData('data-nav');
 
     slideshows.data('speed', $('input[name=speed]').val());
     if ($('#autoplay_yes').is(':checked')) {
@@ -51,13 +57,56 @@ var recalculate = function() {
             oneText: $('input[name=onetext]').val()
         };
         slideshows.data('nav', nav);
+    } else {
+        // removeData doesn't work. oh well.
+        slideshows.data('nav', null);
     }
 
-    slideshows.sideburn();
+    // only initialize the one that's visible
+    // (otherwise you get a lot of "zero" dimensions)
+    $('.tabs-content .active ul.sideburn').sideburn();
 };
 var refresh = _.debounce(recalculate, 500);
 
 $(document).ready(function() {
+    var tabs = $('ul.tabs');
+    tabs.each(function(i) {
+        //Get all tabs
+        var tab = $(this).find('> li > a');
+        tab.click(function(e) {
+            //Get Location of tab's content
+            var contentLocation = $(this).attr('href');
+
+            //Let go if not a hashed one
+            if (contentLocation.charAt(0) == "#") {
+                e.preventDefault();
+
+                //Make Tab Active
+                tab.removeClass('active');
+                $(this).addClass('active');
+
+                //Show Tab Content & add active class
+                $(contentLocation)
+                    .show()
+                    .addClass('active')
+                    .siblings()
+                    .hide()
+                    .removeClass('active');
+
+                var sideburn = $(contentLocation).find('ul.sideburn'),
+                    wrap = $(contentLocation).find('.sideburn-wrap');
+
+                if (sideburn.length) {
+                    if (wrap.length) {
+                        sideburn.sideburn("refresh"); // recalculate size
+                    } else {
+                        sideburn.sideburn(); // initialize
+                    }
+                }
+            }
+        });
+    });
+
     var settingswrap = $('#sideburnsettings');
 
     // sliders
@@ -125,6 +174,9 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
+<div class="stage">
+<div class="wrap">
 
 <div id="sideburnsettings" class="withnext">
 
@@ -322,17 +374,72 @@ number style
 
 </div> <!-- .sideburnsettings -->
 
+<div class="preview">
+
+<!--
+why placehold.it?
+=================
+
+* Remarkably difficult to find free images that make good test data.
+* I need square, landscape, portrait and mixed examples.
+* I want to be able to show off the responsive side of things.
+* It is handy to be able to test the preloader on non-local images.
+-->
+
+<ul class="tabs">
+<li><a href="#square">Square</a></li>
+<li><a class="active" href="#landscape">Landscape</a></li>
+<li><a href="#portrait">Portrait</a></li>
+<li><a href="#mixed">Mixed</a></li>
+</ul>
+
+<ul class="tabs-content">
+<li id="square">
+<ul class="sideburn">
+<li><img src="http://placehold.it/600x600.png/AAFF00/ffffff" width="600" height="600"></li>
+<li><img src="http://placehold.it/600x600.png/FFAA00/ffffff" width="600" height="600"></li>
+<li><img src="http://placehold.it/600x600.png/FF00AA/ffffff" width="600" height="600"></li>
+<li><img src="http://placehold.it/600x600.png/AA00FF/ffffff" width="600" height="600"></li>
+<li><img src="http://placehold.it/600x600.png/00AAFF/ffffff" width="600" height="600"></li>
+</ul>
+</li>
+
+<li class="active" id="landscape">
+<ul class="sideburn">
+<li><img src="http://placehold.it/800x600.png/00AAFF/ffffff" width="800" height="600"></li>
+<li><img src="http://placehold.it/800x600.png/AAFF00/ffffff" width="800" height="600"></li>
+<li><img src="http://placehold.it/800x600.png/FFAA00/ffffff" width="800" height="600"></li>
+<li><img src="http://placehold.it/800x600.png/FF00AA/ffffff" width="800" height="600"></li>
+<li><img src="http://placehold.it/800x600.png/AA00FF/ffffff" width="800" height="600"></li>
+</ul>
+</li>
+
+<li id="portrait">
+<ul class="sideburn">
+<li><img src="http://placehold.it/600x800.png/AA00FF/ffffff" width="600" height="800"></li>
+<li><img src="http://placehold.it/600x800.png/00AAFF/ffffff" width="600" height="800"></li>
+<li><img src="http://placehold.it/600x800.png/AAFF00/ffffff" width="600" height="800"></li>
+<li><img src="http://placehold.it/600x800.png/FFAA00/ffffff" width="600" height="800"></li>
+<li><img src="http://placehold.it/600x800.png/FF00AA/ffffff" width="600" height="800"></li>
+</ul>
+</li>
+
+<li id="mixed">
+<ul class="sideburn">
+<li><img src="http://placehold.it/600x800.png/AAFF00/ffffff" width="600" height="800"></li>
+<li><img src="http://placehold.it/600x600.png/FFAA00/ffffff" width="600" height="600"></li>
+<li><img src="http://placehold.it/800x600.png/FF00AA/ffffff" width="800" height="600"></li>
+<li><img src="http://placehold.it/600x600.png/AA00FF/ffffff" width="600" height="600"></li>
+</ul>
+</li>
+</ul>
 
 
+<!--
+Some local images just in case you're stuck offline:
+-->
 
-
-
-
-
-
-
-<div class="container">
-
+<!--
 <ul class="sideburn">
 <li><img src="media/theninja01c.jpg" width="500" height="612"></li>
 <li><img src="media/theninja02c.jpg" width="500" height="612"></li>
@@ -345,6 +452,7 @@ number style
 <li><img src="media/theninja09.jpg" width="500" height="707"></li>
 <li><img src="media/theninja10.jpg" width="500" height="707"></li>
 </ul>
+-->
 
 <!--
 TODO:
@@ -352,9 +460,12 @@ TODO:
 * non-image content
 (probably in separate tabs)
 -->
-</div>
 
 <p class="footer">See <a href="http://github.com/thisarmy/sideburn">http://github.com/thisarmy/sideburn</a></p>
+
+</div> <!-- .preview -->
+</div> <!-- .wrap -->
+</div> <!-- .stage -->
 
 </body>
 </html>

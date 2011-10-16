@@ -62,6 +62,7 @@ ul.sideburn img {display: block;}
 .sideburn-nav .one {display: none;}
 .sideburn-nav-all .all {display: none;}
 .sideburn-nav-all .one {display: inline;}
+.sideburn-loading .sideburn-nav {display: none;}
 .sideburn-loader {background-color: #f8f8f8; display: none; text-align: center; color: #666; padding: 20px 0; border-radius: 5px;}
 .sideburn-loading .sideburn-loader {display: block;}
 

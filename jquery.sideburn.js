@@ -436,12 +436,14 @@ var Sideburn = function($ul) {
             '<div class="sideburn-loader">loading...</div>');
         this.preload = this.wrap.find('> .sideburn-loader');
     }
+    /*
     this.preload.css({
         'position': 'absolute',
         'z-index': 2,
         'top': 0,
         'left': 0
     });
+    */
 
     // get the items
     this.items = this.ul.find('> li');
@@ -709,7 +711,7 @@ Sideburn.prototype.recalculateSize = function(immediate) {
         return; // the slideshow is probably not visible
     }
     this.items.width(w);
-    this.preload.width(w);
+    //this.preload.width(w);
     var speed = this.speed;
     if (immediate) {
         speed = 0;
@@ -804,8 +806,8 @@ Sideburn.prototype._showLoader = function() {
     For internal use only.
 */
     this.wrap.addClass('sideburn-loading');
-    var w = this.wrap.width();
-    this.preload.width(w);
+    //var w = this.wrap.width();
+    //this.preload.width(w);
 };
 Sideburn.prototype._hideLoader = function() {
 /*

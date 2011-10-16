@@ -10,10 +10,12 @@
 <script src="jquery.sideburn.js"></script>
 <script>
 var recalculate = function() {
-    var slideshows = $('ul.sideburn');
+    var slideshows = $('ul.sideburn'),
+        data = {};
 
     slideshows.sideburn('destroy');
 
+    // clear
     slideshows
         .removeAttr('data-speed')
         .removeData('data-speed')
@@ -28,19 +30,18 @@ var recalculate = function() {
         .removeAttr('data-nav')
         .removeData('data-nav');
 
-    slideshows.data('speed', $('input[name=speed]').val());
+    data['speed'] = $('input[name=speed]').val();
     if ($('#autoplay_yes').is(':checked')) {
-        slideshows.data('timeout', $('input[name=interval]').val());
+        data['timeout'] = $('input[name=interval]').val();
     } else {
-        slideshows.data('timeout', 0);
+        data['timeout'] = 0;
     }
 
-    //slideshows.data('shuffle', $('#shuffle_yes').is(':checked'));
-    slideshows.data('shuffle', false);
+    data['shuffle'] = false;
 
-    slideshows.data('transition', $('select[name=transition]').val());
+    data['transition'] = $('select[name=transition]').val();
 
-    slideshows.data('skipfirstrun', $('#skipfirstrun_yes').is(':checked'));
+    data['skipfirstrun'] = $('#skipfirstrun_yes').is(':checked');
 
     if (!$('#position_none').is(':checked')) {
         var nav = {
@@ -56,11 +57,36 @@ var recalculate = function() {
             allText: $('input[name=alltext]').val(),
             oneText: $('input[name=onetext]').val()
         };
-        slideshows.data('nav', nav);
+        data['nav'] = nav;
     } else {
         // removeData doesn't work. oh well.
-        slideshows.data('nav', null);
+        data['nav'] = null;
     }
+
+    var fake = $('<ul class="sideburn">...</ul>'),
+        fakeWrap = $('<div></div>');
+    for (var k in data) {
+        if (data.hasOwnProperty(k)) {
+            slideshows.data(k, data[k]);
+            var v = data[k];
+            if (_.isObject(v)) {
+                v = JSON.stringify(v);
+            }
+            fake.attr('data-'+k, v);
+        }
+    }
+    fakeWrap.append(fake);
+
+    // BUG: this will replace < and > inside text in the JSON attributes too
+    $('#html').html(
+        fakeWrap.html()
+            .replace(/,/g, ', ')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/ data-/g, "<br> data-")
+        );
+    $('#json').html(JSON.stringify(data).replace(/,/g, ', ')
+);
 
     // only initialize the one that's visible
     // (otherwise you get a lot of "zero" dimensions)
@@ -105,6 +131,12 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+
+    $('#sideburnsettings .toggle').click(function() {
+        var toggle = $(this),
+            code = toggle.next();
+        code.toggle();
     });
 
     var settingswrap = $('#sideburnsettings');
@@ -374,6 +406,15 @@ number style
 </div>
 
 </div> <!-- #jumpgroup -->
+
+<hr>
+
+<div class="codeblocks">
+<h2 class="toggle" title="toggle">HTML</h2>
+<div id="html" class="code"></div>
+<h2 class="toggle" title="toggle">JSON</h2>
+<div id="json" class="code"></div>
+</div>
 
 </div> <!-- .sideburnsettings -->
 

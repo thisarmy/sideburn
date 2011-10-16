@@ -71,7 +71,8 @@ ul.sideburn img {display: block;}
 .sideburn-nav ul.thumbnails li.selected {opacity: 1;}
 
 
-
+.sideburn h1,
+.sideburn p {margin-bottom: 20px;}
 
 #sideburnsettings {font-family: 'Lucida Grande',Verdana,Arial,Helvetica,sans-serif; font-size: 11px; line-height: 18px;}
 #sideburnsettings {float: left; padding: 20px; width: 250px; background-color: #f2f2f2; color: #333;}

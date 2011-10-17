@@ -63,33 +63,38 @@ var recalculate = function() {
         data['nav'] = null;
     }
 
-    var fake = $('<ul class="sideburn">...</ul>'),
-        fakeWrap = $('<div></div>');
-    for (var k in data) {
-        if (data.hasOwnProperty(k)) {
-            slideshows.data(k, data[k]);
-            var v = data[k];
-            if (_.isObject(v)) {
-                v = JSON.stringify(v);
+    if (window.JSON) {
+        var fake = $('<ul class="sideburn">...</ul>'),
+            fakeWrap = $('<div></div>');
+        for (var k in data) {
+            if (data.hasOwnProperty(k)) {
+                slideshows.data(k, data[k]);
+                var v = data[k];
+                if (_.isObject(v)) {
+                    v = JSON.stringify(v);
+                }
+                fake.attr('data-'+k, v);
             }
-            fake.attr('data-'+k, v);
         }
-    }
-    fakeWrap.append(fake);
+        fakeWrap.append(fake);
 
-    // BUG: this will replace < and > inside text in the JSON attributes too
-    $('#htmlcode').val(
-        fakeWrap.html()
-            .replace(/"{/, "'{")
-            .replace(/}"/, "}'")
-            .replace(/&quot;/g, '"')
-            .replace(/,/g, ', ')
-            //.replace(/</g, '&lt;')
-            //.replace(/>/g, '&gt;')
-            //.replace(/ data-/g, "<br> data-")
-            .replace(/ data-/g, "\n data-")
+        // BUG: this will replace < and > inside text in the JSON attributes too
+        $('#htmlcode').val(
+            fakeWrap.html()
+                .replace(/"{/, "'{")
+                .replace(/}"/, "}'")
+                .replace(/&quot;/g, '"')
+                .replace(/,/g, ', ')
+                //.replace(/</g, '&lt;')
+                //.replace(/>/g, '&gt;')
+                //.replace(/ data-/g, "<br> data-")
+                .replace(/ data-/g, "\n data-")
         );
-    $('#jsoncode').val(JSON.stringify(data).replace(/,/g, ', ')
+        $('#jsoncode').val(JSON.stringify(data).replace(/,/g, ', ');
+    } else {
+        $('#htmlcode').val('JSON not supported in this browser.');
+        $('#jsoncode').val('JSON not supported in this browser.');
+    }
 );
 
     // only initialize the one that's visible

@@ -90,12 +90,11 @@ var recalculate = function() {
                 //.replace(/ data-/g, "<br> data-")
                 .replace(/ data-/g, "\n data-")
         );
-        $('#jsoncode').val(JSON.stringify(data).replace(/,/g, ', ');
+        $('#jsoncode').val(JSON.stringify(data).replace(/,/g, ', '));
     } else {
         $('#htmlcode').val('JSON not supported in this browser.');
         $('#jsoncode').val('JSON not supported in this browser.');
     }
-);
 
     // only initialize the one that's visible
     // (otherwise you get a lot of "zero" dimensions)

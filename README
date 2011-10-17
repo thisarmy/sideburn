@@ -8,8 +8,4 @@ transformed rather than passed in to the function. This makes it easier to
 specify the transitions and other settings as data at runtime or by a CMS at
 "edit-time" rather than as options in code when the widget gets instantiated.
 
-The intention is to allow a wide range of transition and layout options and
-also to allow adding new ones as plugins.
-
-It is currently in-progress.
-
+Open index.html in your browser for documentation.

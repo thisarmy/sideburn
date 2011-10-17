@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Sideburn</title>
 <link rel="stylesheet" href="demo.css">
-<script src="deps/jquery-1.5.1.min.js"></script>
+<script src="deps/jquery-1.6.4.min.js"></script>
 <script src="deps/jquery-ui-1.8.16.slider.min.js"></script>
 <script src="deps/underscore.min.js"></script>
 <script src="jquery.sideburn.js"></script>
@@ -63,12 +63,14 @@ var recalculate = function() {
         data['nav'] = null;
     }
 
-    if (window.JSON) {
-        var fake = $('<ul class="sideburn">...</ul>'),
-            fakeWrap = $('<div></div>');
-        for (var k in data) {
-            if (data.hasOwnProperty(k)) {
-                slideshows.data(k, data[k]);
+    var fake = $('<ul class="sideburn">...</ul>'),
+        fakeWrap = $('<div></div>');
+    for (var k in data) {
+        if (data.hasOwnProperty(k)) {
+            // set the data
+            slideshows.data(k, data[k]);
+
+            if (window.JSON) {
                 var v = data[k];
                 if (_.isObject(v)) {
                     v = JSON.stringify(v);
@@ -76,8 +78,10 @@ var recalculate = function() {
                 fake.attr('data-'+k, v);
             }
         }
-        fakeWrap.append(fake);
+    }
+    fakeWrap.append(fake);
 
+    if (window.JSON) {
         // BUG: this will replace < and > inside text in the JSON attributes too
         $('#htmlcode').val(
             fakeWrap.html()

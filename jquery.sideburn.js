@@ -99,7 +99,12 @@ TODO: reveal right (new ones appear from the left, below current)
 vertical
 --------
 
-TODO: same as above, but up/down and not left/right
+slide up (new ones appear from below, next to current)
+slide down (new ones appear from above, next to current)
+slide up and down (images in a vertical line)
+slide up and down wrap (images in a vertical line, wrap around)
+TODO: reveal up (new ones appear from below, below current)
+TODO: reveal down (new ones appear from above, below current)
 
 */
 
@@ -382,6 +387,217 @@ SlideLeftRightWrap.prototype.step = function() {
     horizontalSlideStep(this);
 };
 plugins['slide-left-right-wrap'] = SlideLeftRightWrap;
+
+var SlideUp = function(sideburn) {
+    this.sideburn = sideburn;
+};
+SlideUp.prototype.animate = function($oldItem, $newItem, callback) {
+    $oldItem.css({
+        'left': this.sideburn.calculateLeft($oldItem),
+        'top': this.sideburn.calculateTop($oldItem)
+    });
+    $newItem.css({
+        'left': this.sideburn.calculateLeft($newItem),
+        'top': this.sideburn.calculateTop($newItem)+$oldItem.height()
+    });
+    $newItem.show();
+
+    $oldItem.animate({
+        'top': this.sideburn.calculateTop($newItem)-$oldItem.height()
+    }, this.sideburn.speed);
+
+    $newItem.animate({
+        'top': this.sideburn.calculateTop($newItem)
+    }, this.sideburn.speed, function() {
+        // cleanup
+        $oldItem.hide();
+        callback();
+    });
+};
+plugins['slide-up'] = SlideUp;
+
+var SlideDown = function(sideburn) {
+    this.sideburn = sideburn;
+};
+SlideDown.prototype.animate = function($oldItem, $newItem, callback) {
+    $oldItem.css({
+        'left': this.sideburn.calculateLeft($oldItem),
+        'top': this.sideburn.calculateTop($oldItem)
+    });
+    $newItem.css({
+        'left': this.sideburn.calculateLeft($newItem),
+        'top': this.sideburn.calculateTop($newItem)-$newItem.height()
+    });
+    $newItem.show();
+
+    $oldItem.animate({
+        'top': this.sideburn.calculateTop($oldItem)+$newItem.height()
+    }, this.sideburn.speed);
+
+    $newItem.animate({
+        'top': this.sideburn.calculateTop($newItem)
+    }, this.sideburn.speed, function() {
+        // cleanup
+        $oldItem.hide();
+        callback();
+    });
+};
+plugins['slide-down'] = SlideDown;
+
+var verticalSlideStep = function(plugin) {
+    if (plugin.current == plugin.destination) {
+        return plugin.callback();
+    }
+
+    var next = plugin.current+plugin.direction,
+        numItems = plugin.sideburn.items.length;
+
+    while (next < 0) {
+        next += numItems;
+    }
+    while (next >= numItems) {
+        next -= numItems;
+    }
+
+    var $oldItem = plugin.sideburn.items.eq(plugin.current),
+        $newItem = plugin.sideburn.items.eq(next),
+        speed = plugin.speedIncrements.shift(),
+        easing = (plugin.numSteps == 1) ? 'swing' : 'linear';
+
+
+    if (plugin.direction == 1) {
+        // up
+        $oldItem.css({
+            'left': plugin.sideburn.calculateLeft($oldItem),
+            'top': plugin.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': plugin.sideburn.calculateLeft($newItem),
+            'top': plugin.sideburn.calculateTop($newItem)+$oldItem.height()
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'top': plugin.sideburn.calculateTop($newItem)-$oldItem.height()
+        }, speed, easing);
+
+        $newItem.animate({
+            'top': plugin.sideburn.calculateTop($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            plugin.current = next;
+            plugin.step();
+        });
+
+    } else {
+        // down
+        $oldItem.css({
+            'left': plugin.sideburn.calculateLeft($oldItem),
+            'top': plugin.sideburn.calculateTop($oldItem)
+        });
+        $newItem.css({
+            'left': plugin.sideburn.calculateLeft($newItem),
+            'top': plugin.sideburn.calculateTop($newItem)-$newItem.height()
+        });
+        $newItem.show();
+
+        $oldItem.animate({
+            'top': plugin.sideburn.calculateTop($oldItem)+$newItem.height()
+        }, speed, easing);
+
+        $newItem.animate({
+            'top': plugin.sideburn.calculateTop($newItem)
+        }, speed, easing, function() {
+            // cleanup
+            $oldItem.hide();
+            plugin.current = next;
+            plugin.step();
+        });
+    }
+};
+
+SlideUpDown = function(sideburn) {
+    this.sideburn = sideburn;
+    this.current = null
+    this.destination = null;
+    this.direction = null;
+    this.numSteps = null;
+    this.speedIncrements = [];
+    this.callback = null;
+};
+SlideUpDown.prototype.animate = function($oldItem, $newItem, callback) {
+    var oldIndex = this.sideburn.items.index($oldItem),
+        newIndex = this.sideburn.items.index($newItem),
+        numItems = this.sideburn.items.length,
+        lastIndex = numItems-1,
+        diff,
+        numSteps;
+
+    diff = newIndex-oldIndex;
+    numSteps = Math.abs(diff);
+    this.current = oldIndex;
+    this.destination = newIndex;
+    this.direction = (diff > 0) ? 1 : -1;
+    this.numSteps = numSteps;
+    this.speedIncrements = makeLinearIncrements(this.sideburn.speed, numSteps);
+
+    this.callback = callback;
+    this.step();
+};
+SlideUpDown.prototype.step = function() {
+   verticalSlideStep(this);
+};
+plugins['slide-up-down'] = SlideUpDown;
+
+SlideUpDownWrap = function(sideburn) {
+    this.sideburn = sideburn;
+    this.current = null
+    this.destination = null;
+    this.direction = null;
+    this.numSteps = null;
+    this.speedIncrements = [];
+    this.callback = null;
+};
+SlideUpDownWrap.prototype.animate = function($oldItem, $newItem, callback) {
+    var oldIndex = this.sideburn.items.index($oldItem),
+        newIndex = this.sideburn.items.index($newItem),
+        numItems = this.sideburn.items.length,
+        lastIndex = numItems-1,
+        numSteps;
+
+    if (newIndex>oldIndex) {
+        if (oldIndex == 0 && newIndex == lastIndex) {
+            // at the start going to the end
+            this.direction = -1;
+            numSteps = 1;
+        } else {
+            // just going right as normal
+            this.direction = 1;
+            numSteps = Math.abs(newIndex-oldIndex);
+        }
+    } else {
+        if (oldIndex == lastIndex && newIndex == 0) {
+            // at the end going to the front
+            this.direction = 1;
+            numSteps = 1;
+        } else {
+            // just going left as normal
+            this.direction = -1
+            numSteps = Math.abs(newIndex-oldIndex);
+        }
+    }
+    this.current = oldIndex;
+    this.destination = newIndex;
+    this.numSteps = numSteps;
+    this.speedIncrements = makeLinearIncrements(this.sideburn.speed, numSteps);
+    this.callback = callback;
+    this.step();
+};
+SlideUpDownWrap.prototype.step = function() {
+   verticalSlideStep(this);
+};
+plugins['slide-up-down-wrap'] = SlideUpDownWrap;
 
 /*
 plugins['reveal-left']

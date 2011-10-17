@@ -101,7 +101,7 @@ ul.sideburn img {display: block;}
 .optionsfield input[type=radio] {vertical-align: middle;}
 .selectfield select {float: right;}
 .field + .field,
-.field + .group {margin-top: 10px;}
+.field + .group {margin-top: 10px; clear: both;}
 
 #shufflefield {display: none;} /* still unimplemented */
 #nextgroup, #jumpgroup, #allgroup, #intervalfield, #totalseparatorfield {display: none;}

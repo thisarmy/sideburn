@@ -47,7 +47,7 @@ GOALS
     transition (see below)
     shuffle (default false)
     start (default index or random)
-    skipfirstrun (default false)
+    showfirstrun (default true)
 
     nav (json)
         position = above/below
@@ -409,7 +409,7 @@ var Sideburn = function($ul) {
     this.resizing = false;
     this.resizefunc = null;
     this.firstRun = true;
-    this.skipFirstRun = false;
+    this.showFirstRun = false;
     this.busyShowing = false;
     //this.resized = false;
     this.pause = false;
@@ -553,7 +553,7 @@ var Sideburn = function($ul) {
         }
     }
     // the animation that plays after preloading
-    this.skipFirstRun = (this.ul.data('skipfirstrun')) ? true : false;
+    this.showFirstRun = (this.ul.data('showfirstrun')) ? true : false;
 
     // add the navigation div if there should be nav (start out hidden)
     this.wrap.find('> .sideburn-nav').remove();
@@ -862,13 +862,14 @@ Sideburn.prototype._adjustDimensions = function(index, speed) {
         sideburn.resizing = false;
     });
 };
-Sideburn.prototype._initialAnimate = function(index, callback) {
+Sideburn.prototype._initialAnimate = function(index, preloaded, callback) {
 /*
     Automatically called when showing for the first time after preloading
     or immediately if no preloading is necessary.
+    preloaded is true if we had to wait to preload images, false otherwise.
     The initial show is different because you can't animate from one item
     to another as nothing is visible yet.
-    For internal use only
+    For internal use only.
 */
     this._hideLoader();
     var $first = this.items.eq(index);
@@ -877,7 +878,9 @@ Sideburn.prototype._initialAnimate = function(index, callback) {
     }
 
     var speed = this.speed;
-    if (this.skipFirstRun) {
+    // if we're skipping the first run or we didn't preload, skip the actual
+    // animation and just instantly show
+    if (!this.showFirstRun || !preloaded) {
         speed = 0;
     }
 
@@ -980,13 +983,13 @@ Sideburn.prototype.show = function(index) {
                 }, sideburn.timeout);
             }
         }
-        function reallyShow() {
+        function reallyShow(preloaded) {
             var previousIndex = sideburn.currentIndex;
             sideburn.currentIndex = index;
             sideburn.updateNav();
             if (sideburn.firstRun) {
                 sideburn.firstRun = false;
-                sideburn._initialAnimate(index, afterAnimate);
+                sideburn._initialAnimate(index, preloaded, afterAnimate);
             } else if (sideburn.showAll) {
                 // going from showAll to showOne
                 sideburn.one();
@@ -1001,10 +1004,10 @@ Sideburn.prototype.show = function(index) {
                 urlsToLoad = this.getAllUncachedUrls();
             }
             this._preload(urlsToLoad, function() {
-                reallyShow();
+                reallyShow(true);
             });
         } else {
-            reallyShow();
+            reallyShow(false);
         }
     }
 };

@@ -25,8 +25,8 @@ var recalculate = function() {
         .removeData('data-shuffle')
         .removeAttr('data-transition')
         .removeData('data-transition')
-        .removeAttr('data-skipfirstrun')
-        .removeData('data-skipfirstrun')
+        .removeAttr('data-showfirstrun')
+        .removeData('data-showfirstrun')
         .removeAttr('data-nav')
         .removeData('data-nav');
 
@@ -41,7 +41,7 @@ var recalculate = function() {
 
     data['transition'] = $('select[name=transition]').val();
 
-    data['skipfirstrun'] = $('#skipfirstrun_yes').is(':checked');
+    data['showfirstrun'] = $('#showfirstrun_yes').is(':checked');
 
     if (!$('#position_none').is(':checked')) {
         var nav = {
@@ -213,7 +213,7 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div class="stage">
+<div id="stage">
 <div class="wrap">
 
 <div id="sideburnsettings" class="withnext">
@@ -280,13 +280,13 @@ shuffle?
 -->
 
 <div class="field optionsfield">
-skip first run animation?
+show initial animation?
 <div class="options">
-<label for="skipfirstrun_yes">
-<input type="radio" name="skipfirstrun" id="skipfirstrun_yes" value="true" checked> yes
+<label for="showfirstrun_yes">
+<input type="radio" name="showfirstrun" id="showfirstrun_yes" value="true" checked> yes
 </label>
-<label for="skipfirstrun_no">
-<input type="radio" name="skipfirstrun" id="skipfirstrun_no" value="false"> no
+<label for="showfirstrun_no">
+<input type="radio" name="showfirstrun" id="showfirstrun_no" value="false"> no
 </label>
 </div>
 </div>
@@ -424,7 +424,7 @@ number style
 
 </div> <!-- .sideburnsettings -->
 
-<div class="preview">
+<div id="preview">
 
 <!--
 why placehold.it?
@@ -512,13 +512,159 @@ why placehold.it?
 
 </ul>
 
+</div> <!-- #preview -->
+</div> <!-- .wrap -->
+</div> <!-- #stage -->
+
+<div id="documentation">
+
+<h1>Documentation</h1>
+
+<p>Sideburn receives all the settings from data attributes on the &lt;ul&gt;
+element. This allows different slideshows in the page to have different
+settings. It is also much more flexible than using CSS classes to handle
+configuration. A CMS can add the settings inline and then all you need for your
+slideshows to work is something like:</p>
+
+<pre class="code">$(document).ready(function() {
+    $('ul.sideburn').sideburn(); // see? no configuration required here
+});</pre>
+
+<p>Sideburn has some special support to help responsive / fluid
+layouts: It preloads images and "hardcodes" the elements' width whenever the
+window resizes. This helps because typically the elements are absolutely
+positioned and images inside them will likely have
+<code>max-width: 100%;</code> and <code>height: auto;</code> set so that the
+browser can resize them to fit.</p>
+<p>Resize your browser to see the demo adapt to the available width.</p>
+
+<h2>Settings</h2>
+
+<h3>speed</h3>
+
+<p>Time the transition will take to complete in milliseconds.
+The default is <code>500</code>.</p>
+
+<h3>transition</h3>
+
+<p>Name of the transition effect. Possible values are:</p>
+
+<ul>
+<li><code>fade</code></li>
+<li><code>slide-left</code></li>
+<li><code>slide-right</code></li>
+<li><code>slide-left-right</code></li>
+<li><code>slide-left-right-wrap</code> (the default)</li>
+</ul>
+
+<h3>timeout</h3>
+
+<p>Time between automatic transitions in milliseconds.
+The default is <code>0</code> which means "autoplay" is disabled.</p>
+
+<h3>start</h3>
+
+<p>Zero-based index of the first element to show.
+This defaults to <code>0</code> - the first element.
+Alternatively you can add <code>class="start"</code> to the element you want
+to be first.
+(The demo uses that so that it doesn't jump back to the first one every time
+you change settings.)</p>
+
+<h3>showfirstrun</h3>
+
+<p>Sideburn always preloads images. If it had to preload images this will make
+it fade in the first one. With showfirstrun disabled it will just appear
+immediately without animating. The first run animation is different from the
+normal transition because there is no "previously shown" element to transition
+from. If it doesn't have to preload images (because the images are already
+cached) then it never enters the loading state in the first place. This
+defaults to <code>false</code>.</p>
+
+<h3>nav</h3>
+
+<p>A JSON object. To disable navigation this can be omitted entirely.
+It has the following keys:</p>
+
+<h4>position</h4>
+
+<p>This is either <code>above</code> or <code>below</code>.</p>
+
+<h4>style</h4>
+
+<p><code>next</code>, <code>jump</code> or <code>thumbnails</code>.
+Next means the next/previous style nav,
+jump is for the numbered nav (it is easy to replace in CSS with dots) and
+thumbnails is for thumbnails that also jump straight to the image.
+Thumbnails only supports image-only content.
+The default is <code>next</code>.</p>
+
+<h4>navSeparator</h4>
+
+<p>Text content for the separator span tag when using next or jump
+style nav. It defaults to <code>/</code>. It should be easy to replace with
+an image in CSS.</p>
+
+<h4>nextText</h4>
+
+<p>The text button/link for the next element. For next style nav only.
+Defaults to <code>Next</code>.</p>
+
+<h4>previousText</h4>
+
+<p>The text button/link for the previous element. For next style nav only.
+Defaults to <code>Previous</code>.</p>
+
+<h4>showTotal</h4>
+
+<p>If this is true, then the current position and total (ie. 1 of 10) will be
+added to the nav. For next style nav only. Defaults to <code>false</code>.</p>
+
+<h4>totalSeparator</h4>
+<p>Text content for the separator span tag between the current and total
+numbers. This only applies when you have showTotal set to true.
+It defaults to <code> of </code>. It should be easy to replace with an image
+in CSS.</p>
+
+<h4>showAll</h4>
+
+<p>If this is true, then there will be a link/button in the next nav to toggle
+between showing all the items or just one. Defaults to <code>false</code>.</p>
+
+<h4>allText</h4>
+
+<p>The text button/link for entering show all.
+Defaults to <code>Show all</code>.</p>
+
+<h4>oneText</h4>
+
+<p>The text button/link for entering show all.
+Defaults to <code>Show one</code>.</p>
+
+<h4>numbering</h4>
+
+<p>For jump style nav only. Set to <code>1</code> if you want 1 2 3 .. 9 10 or
+<code>01</code> if you want 01 02 03 .. 09 10.</p>
+
+<h2>Methods</h2>
+
+<h3>$('ul.sideburn').sideburn("destroy");</h3>
+
+<p>Remove the elements, data attributes and event handlers added by sideburn.
+Used by the demo before applying the new settings.</p>
+
+<h3>$('ul.sideburn').sideburn("refresh");</h3>
+
+<p>Sometimes it is necessary to tell sideburn to recalculate its dimensions.
+For example: If it was hidden when the window got resized it won't pick up the
+new dimensions unless you manually tell it to refresh. If your slideshows are
+always visible you wouldn't have to do this.</p>
+
 <hr>
 
-<p class="footer">See <a href="http://github.com/thisarmy/sideburn">http://github.com/thisarmy/sideburn</a></p>
+<p class="footer">Get the code and more info at <a href="http://github.com/thisarmy/sideburn">http://github.com/thisarmy/sideburn</a>.</p>
 
-</div> <!-- .preview -->
-</div> <!-- .wrap -->
-</div> <!-- .stage -->
+</div> <!-- #documentation -->
 
 </body>
 </html>

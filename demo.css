@@ -110,6 +110,7 @@ ul.sideburn img {display: block;}
 .withall #allgroup,
 .withinterval #intervalfield,
 .withtotalseparator #totalseparatorfield {display: block;}
+.withoutnavseparator #navstylefield {display: none;}
 
 .sliderwrap {float: right; width: 180px; text-align: right;}
 .slider {float: left; width: 125px; height: 4px; background-color: #777; position: relative; margin: 0 5px;}

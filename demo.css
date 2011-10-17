@@ -103,7 +103,7 @@ ul.sideburn img {display: block;}
 .valuewrap {display: inline-block;}
 
 #sideburnsettings .codeblocks {margin-top: 10px;}
-#sideburnsettings .code {overflow: auto; background-color: #fff; padding: 5px; margin-top: 5px;}
+#sideburnsettings .code {background-color: #fff; padding: 5px; margin: 0; margin-top: 5px; width: 235px; height: 200px;}
 
 #sideburnsettings .toggle {margin-top: 10px; text-decoration: underline; color: #000; cursor: pointer;}
 #sideburnsettings .toggle + .code {display: none;}

@@ -78,14 +78,18 @@ var recalculate = function() {
     fakeWrap.append(fake);
 
     // BUG: this will replace < and > inside text in the JSON attributes too
-    $('#htmlcode').html(
+    $('#htmlcode').val(
         fakeWrap.html()
+            .replace(/"{/, "'{")
+            .replace(/}"/, "}'")
+            .replace(/&quot;/g, '"')
             .replace(/,/g, ', ')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/ data-/g, "<br> data-")
+            //.replace(/</g, '&lt;')
+            //.replace(/>/g, '&gt;')
+            //.replace(/ data-/g, "<br> data-")
+            .replace(/ data-/g, "\n data-")
         );
-    $('#jsoncode').html(JSON.stringify(data).replace(/,/g, ', ')
+    $('#jsoncode').val(JSON.stringify(data).replace(/,/g, ', ')
 );
 
     // only initialize the one that's visible
@@ -200,6 +204,8 @@ $(document).ready(function() {
     settingswrap.find('input[type=text]').keyup(function() {
         refresh();
     });
+
+    $('textarea.code').mouseup(function() {this.select();});
 
     recalculate();
 });
@@ -410,10 +416,10 @@ number style
 <hr>
 
 <div class="codeblocks">
-<h2 class="toggle" title="toggle">HTML</h2>
-<div id="htmlcode" class="code"></div>
+<h2 class="toggle" title="toggle" readonly="true">HTML</h2>
+<textarea id="htmlcode" class="code"></textarea>
 <h2 class="toggle" title="toggle">JSON</h2>
-<div id="jsoncode" class="code"></div>
+<textarea id="jsoncode" class="code" readonly="true"></textarea>
 </div>
 
 </div> <!-- .sideburnsettings -->

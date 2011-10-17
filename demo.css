@@ -46,7 +46,7 @@ html {background-color: #222; font-family: georgia, sans-serif; font-size: 14px;
 #documentation code {padding: 1px 3px; font-size: 12px;}
 #documentation pre.code {padding: 10px; font-size: 13px;}
 
-hr {clear: both; border: none; height: 0; border-top: 1px solid #ccc; margin: 1em 0;}
+hr {border: none; height: 0; border-top: 1px solid #ccc; margin: 1em 0;}
 #documentation hr {border-top: 2px solid #aaa;}
 a {color: blue;}
 p.footer {margin-top: 20px;}
@@ -96,12 +96,13 @@ ul.sideburn img {display: block;}
 #sideburnsettings {font-family: 'Lucida Grande',Verdana,Arial,Helvetica,sans-serif; font-size: 11px; line-height: 18px;}
 #sideburnsettings {float: left; padding: 20px; width: 250px; background-color: #f2f2f2; color: #333;}
 #sideburnsettings h1 {color: #000; margin: 0; padding: 0; font-size: 12px; line-height: 20px; margin-bottom: 10px;}
-.textfield input[type=text] {float: right; width: 100px;}
-.optionsfield .options {float: right;}
+.field {position: relative;}
+.textfield input[type=text] {width: 100px; position: absolute; top: 0; right: 0;}
+.optionsfield .options {position: absolute; top: 0; right: 0;}
 .optionsfield input[type=radio] {vertical-align: middle;}
-.selectfield select {float: right;}
+.selectfield select {position: absolute; top: 0; right: 0;}
 .field + .field,
-.field + .group {margin-top: 10px; clear: both;}
+.field + .group {margin-top: 10px;}
 
 #shufflefield {display: none;} /* still unimplemented */
 #nextgroup, #jumpgroup, #allgroup, #intervalfield, #totalseparatorfield {display: none;}
@@ -112,7 +113,7 @@ ul.sideburn img {display: block;}
 .withtotalseparator #totalseparatorfield {display: block;}
 .withoutnavseparator #navstylefield {display: none;}
 
-.sliderwrap {float: right; width: 180px; text-align: right;}
+.sliderwrap {width: 180px; text-align: right; position: absolute; top: 0; right: 0;}
 .slider {float: left; width: 125px; height: 4px; background-color: #777; position: relative; margin: 0 5px;}
 .slider {border-top: 7px solid #f2f2f2; border-bottom: 7px solid #f2f2f2; vertical-align: top;}
 .ui-slider-handle {width: 12px; height: 12px; background-color: #777; position: absolute; top: -4px; margin-left: -6px; border-radius: 3px;}

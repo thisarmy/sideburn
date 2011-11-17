@@ -122,13 +122,13 @@ if (!('indexOf' in Array.prototype)) {
 }
 
 var nextId = 1;
-function getNextItemId() {
+var getNextItemId = function() {
     // makes up something suitable for an id="" attr on an li tag
     var id = 'sideburn-item-'+nextId;
     nextId += 1;
     return id;
 }
-function getOrSetItemId($li) {
+var getOrSetItemId = function($li) {
     // fills in id="" on $li if it doesn't exist, returns it
     if (!$li.attr('id')) {
         $li.attr('id', getNextItemId());
@@ -236,7 +236,7 @@ SlideRight.prototype.animate = function($oldItem, $newItem, callback) {
 };
 plugins['slide-right'] = SlideRight;
 
-function makeLinearIncrements(total, numSteps) {
+var makeLinearIncrements = function(total, numSteps) {
     var steps = [],
         increment = total/numSteps;
     for (var i=0; i<numSteps; i++) {
@@ -622,7 +622,7 @@ plugins['slide-up-down']
 plugins['slide-up-down-wrap']
 */
 
-function detectPlugin(name) {
+var detectPlugin = function(name) {
     var plugin = plugins['slide-left-right-wrap'];
     if (plugins[name]) {
         plugin = plugins[name];
@@ -1131,7 +1131,7 @@ Sideburn.prototype._preload = function(urls, callback) {
     var sideburn = this;
     // check periodically to see if they are loaded
     // once loaded, call the callback
-    function check() {
+    var check = function() {
         var waiting = [];
         for (var i in urls) {
             var url = urls[i];
@@ -1189,7 +1189,7 @@ Sideburn.prototype.show = function(index) {
         // queue the click?
     } else {
         this.busyShowing = true; // TODO: set class, disabled cursor?
-        function afterAnimate() {
+        var afterAnimate = function() {
             sideburn.busyShowing = false;
             var $current = sideburn.items.eq(index);
             /*
@@ -1211,7 +1211,7 @@ Sideburn.prototype.show = function(index) {
                 }, sideburn.timeout);
             }
         }
-        function reallyShow(preloaded) {
+        var reallyShow = function(preloaded) {
             var previousIndex = sideburn.currentIndex;
             sideburn.currentIndex = index;
             sideburn.updateNav();

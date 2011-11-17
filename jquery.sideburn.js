@@ -1375,6 +1375,15 @@ $.fn.sideburn = function(method) {
         } else if (method == "refresh") {
             sideburn = $ul.data('sideburn')
             sideburn.recalculateSize();
+
+        } else if (method == "next") {
+            sideburn = $ul.data('sideburn')
+            sideburn.next();
+
+        } else if (method == "previous") {
+            sideburn = $ul.data('sideburn')
+            sideburn.previous();
+
         } else {
             var sideburn = new Sideburn($ul);
             $ul.data('sideburn', sideburn);

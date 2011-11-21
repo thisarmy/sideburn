@@ -1346,7 +1346,7 @@ Sideburn.prototype.one = function() {
     });
 };
 
-$.fn.sideburn = function(method) {
+$.fn.sideburn = function(method, id) {
     this.each(function() {
         if (this.tagName.toLowerCase() != 'ul') {
             return;
@@ -1383,6 +1383,13 @@ $.fn.sideburn = function(method) {
         } else if (method == "previous") {
             sideburn = $ul.data('sideburn')
             sideburn.previous();
+
+        } else if (method == "jump") {
+            sideburn = $ul.data('sideburn')
+            var item = sideburn.items.filter('#'+id);
+            if (item.length == 1) {
+                sideburn.show(item.index());
+            }
 
         } else {
             var sideburn = new Sideburn($ul);
